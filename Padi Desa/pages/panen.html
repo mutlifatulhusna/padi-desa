@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Data Panen - Platform Padi Desa Cirebon Girang</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="../css/style.css" />
+    <style>
+        /* Shared Styles */
+        .page-container { padding: 0; }
+        .toolbar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 24px; }
+        .search-box { display: flex; gap: 8px; flex: 1; max-width: 400px; }
+        .search-box input { flex: 1; padding: 10px 16px; border: 2px solid #e8f0e6; border-radius: 10px; font-size: 14px; background: #f8fbf7; }
+        .search-box input:focus { outline: none; border-color: #2d6a4f; }
+        .search-box button { padding: 10px 20px; background: #2d6a4f; color: #fff; border: none; border-radius: 10px; cursor: pointer; }
+        .btn-add { background: #2d6a4f; color: #fff; padding: 10px 24px; border: none; border-radius: 10px; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; }
+        .table-wrapper { overflow-x: auto; background: #fff; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border: 1px solid #e8f0e6; }
+        table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        table thead { background: #f8fbf7; border-bottom: 2px solid #e8f0e6; }
+        table th { padding: 14px 16px; text-align: left; font-weight: 600; color: #1e3a2f; white-space: nowrap; }
+        table td { padding: 12px 16px; border-bottom: 1px solid #f0f5ee; vertical-align: middle; }
+        .table-actions button { padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; margin-right: 4px; }
+        .btn-edit { background: #fef3e8; color: #b45309; }
+        .btn-delete { background: #fde8e8; color: #c0392b; }
+        .empty-state { text-align: center; padding: 48px 20px; display: none; }
+        .empty-state i { font-size: 48px; color: #8aaa9a; margin-bottom: 12px; }
+
+        .quality-badge { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+        .qual-baik { background: #e8f5e9; color: #2e7d32; }
+        .qual-sedang { background: #fff3e0; color: #ef6c00; }
+        .qual-kurang { background: #fde8e8; color: #c0392b; }
+
+        /* Modal */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center; padding: 20px; }
+        .modal-overlay.active { display: flex; }
+        .modal { background: #fff; border-radius: 20px; max-width: 500px; width: 100%; padding: 32px; animation: modalIn 0.3s ease; }
+        @keyframes modalIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .close-modal { background: none; border: none; font-size: 24px; cursor: pointer; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+        .form-group input, .form-group select { width: 100%; padding: 10px 14px; border: 2px solid #e8f0e6; border-radius: 10px; font-size: 14px; }
+        .form-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px; }
+        .form-actions button { padding: 10px 24px; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; }
+        .btn-save { background: #2d6a4f; color: #fff; }
+        .btn-cancel { background: #e8f0e6; color: #1e3a2f; }
+    </style>
+</head>
+<body>
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="modalTitle">Tambah Data Panen</h2>
+                <button class="close-modal" onclick="closeModal()">&times;</button>
+            </div>
+            <form id="panenForm">
+                <input type="hidden" id="editId" />
+                <div class="form-group">
+                    <label>Petani *</label>
+                    <select id="petani_id" required></select>
+                </div>
+                <div class="form-group">
+                    <label>Tanggal Panen *</label>
+                    <input type="date" id="tanggal" required />
+                </div>
+                <div class="form-group">
+                    <label>Jumlah Panen (Ton) *</label>
+                    <input type="number" id="jumlah" step="0.1" min="0.1" required />
+                </div>
+                <div class="form-group">
+                    <label>Kualitas</label>
+                    <select id="kualitas">
+                        <option value="Baik">Baik</option>
+                        <option value="Sedang">Sedang</option>
+                        <option value="Kurang">Kurang</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" onclick="closeModal()">Batal</button>
+                    <button type="submit" class="btn-save">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="page-container">
+        <div class="toolbar">
+            <div class="search-box">
+                <input type="date" id="searchInput" onchange="handleSearch()" />
+                <button onclick="handleSearch()"><i class="fas fa-search"></i></button>
+            </div>
+            <button class="btn-add" id="btnAdd" onclick="showAddModal()"><i class="fas fa-plus"></i> Tambah Panen</button>
+        </div>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Petani</th>
+                        <th>Tanggal</th>
+                        <th>Jumlah (Ton)</th>
+                        <th>Kualitas</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+
+        <div class="empty-state" id="emptyState">
+            <i class="fas fa-seedling"></i>
+            <h3>Belum Ada Data Panen</h3>
+        </div>
+        
+        <div style="margin-top: 24px; display: flex; gap: 20px; font-size: 14px; color: #4a6b5a;">
+            <span>Total Hasil Panen: <strong id="totalPanen">0</strong> Ton</span>
+        </div>
+    </div>
+
+    <script src="../js/auth.js"></script>
+    <script src="../js/database.js"></script>
+    <script src="../js/panen.js"></script>
+    <script src="../js/chatbot-widget.js?v=20261113_v25"></script>
+    <script>
+        const currentUser = auth.getCurrentUser();
+        if (!currentUser) window.location.href = '../login.html';
+
+        const tableBody = document.getElementById('tableBody');
+        const emptyState = document.getElementById('emptyState');
+        const modalOverlay = document.getElementById('modalOverlay');
+        const form = document.getElementById('panenForm');
+        const searchInput = document.getElementById('searchInput');
+        const selectPetani = document.getElementById('petani_id');
+        const statTotal = document.getElementById('totalPanen');
+        
+        if (currentUser.role === 'perangkat' || currentUser.role === 'kelompok') {
+            document.getElementById('btnAdd').style.display = 'none';
+        }
+
+        function initPetaniSelect() {
+            let pList = [];
+            if (currentUser.role === 'admin') pList = DB.getAll(DB.keys.PETANI);
+            else if (currentUser.role === 'petani') {
+                const p = DB.getPetaniByUserId(currentUser.id);
+                if (p) pList = [p];
+                else document.getElementById('btnAdd').style.display = 'none';
+            }
+            selectPetani.innerHTML = '<option value="">Pilih Petani</option>';
+            pList.forEach(p => {
+                selectPetani.innerHTML += `<option value="${p.id}">${p.nama} (${p.nik})</option>`;
+            });
+        }
+
+        function loadData(keyword = '') {
+            let data = [];
+            if (currentUser.role === 'admin' || currentUser.role === 'perangkat') {
+                data = keyword ? PanenManager.search(keyword) : PanenManager.getAll();
+            } else if (currentUser.role === 'petani') {
+                const userPetani = DB.getPetaniByUserId(currentUser.id);
+                if (userPetani) data = PanenManager.getByPetaniId(userPetani.id);
+                if (keyword) data = data.filter(p => p.tanggal.includes(keyword));
+            } else if (currentUser.role === 'kelompok') {
+                const userPetani = DB.getPetaniByUserId(currentUser.id);
+                if (userPetani) {
+                    const anggota = DB.getPetaniByKelompok(userPetani.kelompok_tani_id);
+                    anggota.forEach(a => {
+                        data.push(...PanenManager.getByPetaniId(a.id));
+                    });
+                }
+                if (keyword) data = data.filter(p => p.tanggal.includes(keyword));
+            }
+            renderTable(data);
+            
+            // update stats
+            const total = data.reduce((acc, curr) => acc + (parseFloat(curr.jumlah) || 0), 0);
+            statTotal.textContent = total.toFixed(2);
+        }
+
+        function renderTable(data) {
+            tableBody.innerHTML = '';
+            if (data.length === 0) {
+                emptyState.style.display = 'block';
+                document.querySelector('.table-wrapper').style.display = 'none';
+                return;
+            }
+            emptyState.style.display = 'none';
+            document.querySelector('.table-wrapper').style.display = 'block';
+
+            data.forEach((p, i) => {
+                const petani = DB.getById(DB.keys.PETANI, p.petani_id);
+                const pName = petani ? petani.nama : 'Unknown';
+                
+                let canEdit = currentUser.role === 'admin' || 
+                             (currentUser.role === 'petani' && petani && petani.user_id === currentUser.id);
+
+                let actions = canEdit ? `
+                    <button class="btn-edit" onclick="editData('${p.id}')"><i class="fas fa-edit"></i></button>
+                    <button class="btn-delete" onclick="deleteData('${p.id}')"><i class="fas fa-trash"></i></button>
+                ` : `<span style="font-size:12px;color:#8aaa9a;"><i class="fas fa-eye"></i> View</span>`;
+
+                let qualClass = 'qual-baik';
+                if(p.kualitas === 'Sedang') qualClass = 'qual-sedang';
+                if(p.kualitas === 'Kurang') qualClass = 'qual-kurang';
+
+                tableBody.innerHTML += `
+                    <tr>
+                        <td>${i + 1}</td>
+                        <td><strong>${pName}</strong></td>
+                        <td>${p.tanggal}</td>
+                        <td>${p.jumlah}</td>
+                        <td><span class="quality-badge ${qualClass}">${p.kualitas}</span></td>
+                        <td class="table-actions">${actions}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        window.handleSearch = () => {
+            loadData(searchInput.value.trim());
+        };
+
+        window.showAddModal = () => {
+            form.reset();
+            document.getElementById('editId').value = '';
+            document.getElementById('modalTitle').textContent = 'Tambah Data Panen';
+            if(currentUser.role === 'petani'){
+                const p = DB.getPetaniByUserId(currentUser.id);
+                if(p) document.getElementById('petani_id').value = p.id;
+            }
+            // default date today
+            document.getElementById('tanggal').value = new Date().toISOString().split('T')[0];
+            modalOverlay.classList.add('active');
+        };
+
+        window.closeModal = () => modalOverlay.classList.remove('active');
+
+        window.editData = id => {
+            const p = PanenManager.getById(id);
+            if (!p) return;
+            document.getElementById('editId').value = p.id;
+            document.getElementById('petani_id').value = p.petani_id;
+            document.getElementById('tanggal').value = p.tanggal;
+            document.getElementById('jumlah').value = p.jumlah;
+            document.getElementById('kualitas').value = p.kualitas;
+            document.getElementById('modalTitle').textContent = 'Edit Data Panen';
+            modalOverlay.classList.add('active');
+        };
+
+        window.deleteData = id => {
+            if (confirm('Yakin hapus data panen ini?')) {
+                PanenManager.delete(id);
+                loadData();
+            }
+        };
+
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            const id = document.getElementById('editId').value;
+            const data = {
+                petani_id: document.getElementById('petani_id').value,
+                tanggal: document.getElementById('tanggal').value,
+                jumlah: document.getElementById('jumlah').value,
+                kualitas: document.getElementById('kualitas').value
+            };
+            id ? PanenManager.update(id, data) : PanenManager.create(data);
+            closeModal();
+            loadData();
+        });
+
+        initPetaniSelect();
+        loadData();
+    </script>
+</body>
+</html>

@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Daftar Akun Petani - Platform Padi Desa Cirebon Girang</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="css/style.css" />
+    <style>
+        /* ===== REGISTER PAGE STYLES ===== */
+        .register-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #f0f7ee 0%, #d4e8d0 100%);
+            padding: 36px 16px;
+        }
+
+        .register-container {
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(30, 58, 47, 0.12);
+            padding: 40px;
+            max-width: 660px;
+            width: 100%;
+            transition: 0.3s;
+        }
+
+        .back-nav {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #4a6b5a;
+            font-size: 13px;
+            text-decoration: none;
+            margin-bottom: 18px;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        .back-nav:hover {
+            color: #2d6a4f;
+            transform: translateX(-3px);
+        }
+
+        .register-container .logo-area {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .register-container .logo-area i.main-icon {
+            font-size: 40px;
+            color: #2d6a4f;
+            background: #e8f3e6;
+            padding: 14px;
+            border-radius: 16px;
+            margin-bottom: 10px;
+            display: inline-block;
+        }
+
+        .register-container .logo-area h2 {
+            font-size: 24px;
+            color: #1e3a2f;
+            margin-bottom: 4px;
+            font-weight: 700;
+        }
+
+        .register-container .logo-area p {
+            color: #4a6b5a;
+            font-size: 14px;
+        }
+
+        .role-notice {
+            background: #f0f7ee;
+            border: 1px solid #cde4cb;
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 22px;
+            font-size: 13px;
+            color: #1b4332;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .role-notice i {
+            font-size: 22px;
+            color: #2d6a4f;
+            flex-shrink: 0;
+        }
+
+        .section-divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 20px 0 16px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #2d6a4f;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .section-divider::before,
+        .section-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #e2ede0;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #1e3a2f;
+            margin-bottom: 6px;
+        }
+
+        .form-group label span.req {
+            color: #e63946;
+            margin-left: 2px;
+        }
+
+        .form-group .input-wrapper {
+            position: relative;
+        }
+
+        .form-group .input-wrapper i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #4a6b5a;
+            font-size: 15px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 11px 14px 11px 40px;
+            border: 2px solid #e8f0e6;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: 0.3s;
+            background: #f8fbf7;
+            color: #1e3a2f;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 65px;
+            padding-top: 10px;
+        }
+
+        .form-group .input-wrapper textarea ~ i {
+            top: 20px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #2d6a4f;
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(45, 106, 79, 0.08);
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: #8aaa9a;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin: 16px 0 20px;
+            font-size: 13px;
+            color: #3d5a4b;
+            cursor: pointer;
+        }
+
+        .checkbox-container input[type="checkbox"] {
+            accent-color: #2d6a4f;
+            width: 16px;
+            height: 16px;
+            margin-top: 2px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .btn-register-submit {
+            width: 100%;
+            padding: 14px;
+            background: #2d6a4f;
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-register-submit:hover {
+            background: #1b4332;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(45, 106, 79, 0.3);
+        }
+
+        .btn-register-submit:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 14px;
+            margin-bottom: 18px;
+            display: none;
+            line-height: 1.5;
+        }
+
+        .alert.error {
+            display: block;
+            background: #fde8e8;
+            color: #c0392b;
+            border: 1px solid #f5c6c6;
+        }
+
+        .alert.success {
+            display: block;
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+
+        .register-footer {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 14px;
+            color: #4a6b5a;
+        }
+
+        .register-footer a {
+            color: #2d6a4f;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .register-footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+
+            .register-container {
+                padding: 26px 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="register-page">
+        <div class="register-container">
+            <a href="login.html" class="back-nav">
+                <i class="fas fa-arrow-left"></i> Kembali ke Halaman Login
+            </a>
+
+            <!-- Logo & Title -->
+            <div class="logo-area">
+                <div><i class="fas fa-seedling main-icon"></i></div>
+                <h2>Daftar Akun Petani</h2>
+                <p>Platform Padi Desa Cirebon Girang</p>
+            </div>
+
+            <!-- Role Notice -->
+            <div class="role-notice">
+                <i class="fas fa-id-badge"></i>
+                <div>
+                    <strong>Pendaftaran Mandiri Petani:</strong> Akun ini khusus untuk Petani Desa Cirebon Girang agar dapat mengelola lahan, mencatat panen, dan mengakses fitur konsultasi AI.
+                </div>
+            </div>
+
+            <!-- Alert Box -->
+            <div id="registerAlert" class="alert"></div>
+
+            <!-- Register Form -->
+            <form id="registerForm">
+                <!-- Section 1: Profil Petani -->
+                <div class="section-divider">
+                    <span>1. Data Pribadi Petani</span>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label for="nama">Nama Lengkap <span class="req">*</span></label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-user"></i>
+                            <input type="text" id="nama" name="nama" placeholder="Contoh: Budi Santoso" required autofocus />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="no_telepon">No. WhatsApp / HP <span class="req">*</span></label>
+                        <div class="input-wrapper">
+                            <i class="fab fa-whatsapp"></i>
+                            <input type="tel" id="no_telepon" name="no_telepon" placeholder="08xxxxxxxxxx" required />
+                        </div>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="alamat">Alamat Domisili <span class="req">*</span></label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <textarea id="alamat" name="alamat" rows="2" placeholder="Contoh: Dusun 1 RT 02 / RW 01, Desa Cirebon Girang" required></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 2: Data Kelompok & Lahan -->
+                <div class="section-divider">
+                    <span>2. Kelompok & Lahan Pertanian</span>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="kelompok_tani_id">Kelompok Tani</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-users"></i>
+                            <select id="kelompok_tani_id" name="kelompok_tani_id">
+                                <option value="">-- Pilih Kelompok Tani --</option>
+                                <option value="1">Kelompok Tani Makmur</option>
+                                <option value="2">Kelompok Tani Sejahtera</option>
+                                <option value="3">Kelompok Tani Berkah</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="luas_lahan">Luas Lahan (Hektar)</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-vector-square"></i>
+                            <input type="number" id="luas_lahan" name="luas_lahan" step="0.01" min="0" placeholder="Contoh: 1.5" />
+                        </div>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="varietas_padi">Varietas Padi Utama</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-wheat-awn"></i>
+                            <select id="varietas_padi" name="varietas_padi">
+                                <option value="Ciherang">Ciherang</option>
+                                <option value="Inpari 32">Inpari 32</option>
+                                <option value="IR 64">IR 64</option>
+                                <option value="Mekongga">Mekongga</option>
+                                <option value="Muncul">Muncul</option>
+                                <option value="Sintanur">Sintanur</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 3: Akun Login -->
+                <div class="section-divider">
+                    <span>3. Akun Masuk (Login)</span>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label for="username">Email atau Username <span class="req">*</span></label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-envelope"></i>
+                            <input type="text" id="username" name="username" placeholder="Contoh: budi@desa.id atau budi_santoso" required />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password <span class="req">*</span></label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="password" name="password" placeholder="Minimal 5 karakter" minlength="5" required />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirm_password">Konfirmasi Password <span class="req">*</span></label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-shield-alt"></i>
+                            <input type="password" id="confirm_password" name="confirm_password" placeholder="Ulangi password" minlength="5" required />
+                        </div>
+                    </div>
+                </div>
+
+                <label class="checkbox-container">
+                    <input type="checkbox" id="termsCheck" required />
+                    <span>Saya menyatakan bahwa informasi yang dimasukkan adalah benar data saya sebagai petani Desa Cirebon Girang.</span>
+                </label>
+
+                <!-- Submit Button -->
+                <button type="submit" id="btnRegister" class="btn-register-submit">
+                    <i class="fas fa-user-plus"></i> Daftar Akun Sekarang
+                </button>
+            </form>
+
+            <div class="register-footer">
+                Sudah memiliki akun? <a href="login.html">Masuk di sini</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/database.js?v=20261111"></script>
+    <script>
+        const registerForm = document.getElementById('registerForm');
+        const alertBox = document.getElementById('registerAlert');
+        const btnRegister = document.getElementById('btnRegister');
+
+        function showAlert(message, type = 'error') {
+            alertBox.textContent = message;
+            alertBox.className = `alert ${type}`;
+            alertBox.style.display = 'block';
+            alertBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function hideAlert() {
+            alertBox.style.display = 'none';
+            alertBox.className = 'alert';
+        }
+
+        function setSubmitting(isSubmitting) {
+            if (isSubmitting) {
+                btnRegister.disabled = true;
+                btnRegister.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan ke Database...';
+            } else {
+                btnRegister.disabled = false;
+                btnRegister.innerHTML = '<i class="fas fa-user-plus"></i> Daftar Akun Sekarang';
+            }
+        }
+
+        // Load kelompok tani options from database if available
+        document.addEventListener('DOMContentLoaded', () => {
+            try {
+                if (window.DB && typeof DB.init === 'function') {
+                    DB.init();
+                    const kelompokList = DB.getAll(DB.keys.KELOMPOK_TANI);
+                    if (Array.isArray(kelompokList) && kelompokList.length > 0) {
+                        const sel = document.getElementById('kelompok_tani_id');
+                        sel.innerHTML = '<option value="">-- Pilih Kelompok Tani --</option>';
+                        kelompokList.forEach(k => {
+                            const opt = document.createElement('option');
+                            opt.value = k.id;
+                            opt.textContent = k.nama + (k.ketua ? ` (Ketua: ${k.ketua})` : '');
+                            sel.appendChild(opt);
+                        });
+                    }
+                }
+            } catch (err) {
+                console.warn('Gagal memuat kelompok tani:', err);
+            }
+        });
+
+        registerForm.addEventListener('submit', async function (e) {
+            e.preventDefault();
+            hideAlert();
+
+            const nama = document.getElementById('nama').value.trim();
+            const noTelepon = document.getElementById('no_telepon').value.trim();
+            const alamat = document.getElementById('alamat').value.trim();
+            const kelompokTaniId = document.getElementById('kelompok_tani_id').value;
+            const luasLahan = parseFloat(document.getElementById('luas_lahan').value) || 0;
+            const varietasPadi = document.getElementById('varietas_padi').value;
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm_password').value;
+
+            // Validations
+            if (!nama || !username || !password) {
+                showAlert('Nama lengkap, username/email, dan password wajib diisi!', 'error');
+                return;
+            }
+
+            if (password.length < 5) {
+                showAlert('Password minimal 5 karakter!', 'error');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                showAlert('Konfirmasi password tidak cocok dengan password yang dimasukkan!', 'error');
+                return;
+            }
+
+            setSubmitting(true);
+
+            const payload = {
+                name: nama,
+                nama: nama,
+                nik: '',
+                no_telepon: noTelepon,
+                alamat: alamat,
+                kelompok_tani_id: kelompokTaniId ? parseInt(kelompokTaniId) : null,
+                luas_lahan: luasLahan,
+                varietas_padi: varietasPadi,
+                username: username,
+                password: password
+            };
+
+            let isSavedToMySQL = false;
+            let registeredUser = null;
+
+            // 1. Simpan ke Backend MySQL melalui api/auth.php?register
+            try {
+                const response = await fetch('api/auth.php?register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const resData = await response.json();
+
+                if (!response.ok || !resData.success) {
+                    setSubmitting(false);
+                    showAlert(resData.message || 'Gagal mendaftar akun. Silakan coba lagi.', 'error');
+                    return;
+                }
+
+                isSavedToMySQL = true;
+                registeredUser = resData.data && resData.data.user ? resData.data.user : null;
+            } catch (networkErr) {
+                console.warn('Network error or server offline, continuing with local storage:', networkErr);
+            }
+
+            // 2. Simpan juga ke LocalStorage DB layer untuk sinkronisasi client-side
+            try {
+                if (window.DB) {
+                    const userId = registeredUser ? registeredUser.id : (Date.now());
+                    
+                    // Simpan ke db_users
+                    const currentUsers = DB.getAll(DB.keys.USERS);
+                    const userExists = currentUsers.some(u => (u.username || '').toLowerCase() === username.toLowerCase());
+                    if (!userExists) {
+                        const newU = {
+                            id: userId,
+                            username: username,
+                            password: password,
+                            name: nama,
+                            role: 'petani',
+                            roleLabel: 'Petani',
+                            avatar: '🧑‍🌾',
+                            created_at: new Date().toISOString()
+                        };
+                        currentUsers.push(newU);
+                        localStorage.setItem(DB.keys.USERS, JSON.stringify(currentUsers));
+                    }
+
+                    // Simpan ke db_petani
+                    const currentPetani = DB.getAll(DB.keys.PETANI);
+                    const petaniId = registeredUser && registeredUser.petani_id ? registeredUser.petani_id : (Date.now());
+                    const newP = {
+                        id: petaniId,
+                        nama: nama,
+                        nik: '',
+                        alamat: alamat,
+                        no_telepon: noTelepon,
+                        kelompok_tani_id: kelompokTaniId ? parseInt(kelompokTaniId) : null,
+                        luas_lahan: luasLahan,
+                        varietas_padi: varietasPadi,
+                        user_id: userId,
+                        created_at: new Date().toISOString()
+                    };
+                    currentPetani.push(newP);
+                    localStorage.setItem(DB.keys.PETANI, JSON.stringify(currentPetani));
+
+                    // Jika ada lahan, simpan ke db_lahan
+                    if (luasLahan > 0) {
+                        const currentLahan = DB.getAll(DB.keys.LAHAN);
+                        currentLahan.push({
+                            id: Date.now(),
+                            petani_id: petaniId,
+                            luas: luasLahan,
+                            lokasi: alamat || ('Lahan Petani ' + nama),
+                            status: 'Aktif',
+                            created_at: new Date().toISOString()
+                        });
+                        localStorage.setItem(DB.keys.LAHAN, JSON.stringify(currentLahan));
+                    }
+
+                    // Trigger sync dari MySQL jika online
+                    if (typeof DB.syncFromMySQL === 'function') {
+                        DB.syncFromMySQL();
+                    }
+                }
+            } catch (lsErr) {
+                console.warn('LocalStorage error:', lsErr);
+            }
+
+            showAlert('🎉 Pendaftaran Akun Petani Berhasil! Data Anda telah terhubung ke database. Mengalihkan ke halaman login...', 'success');
+
+            setTimeout(() => {
+                window.location.href = `login.html?registered_user=${encodeURIComponent(username)}`;
+            }, 1500);
+        });
+    </script>
+</body>
+
+</html>

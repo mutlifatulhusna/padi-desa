@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Konfigurasi AI - Platform Padi Desa Cirebon Girang</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="../css/style.css" />
+    <style>
+        .page-container {
+            max-width: 1050px;
+            margin: 0 auto;
+            padding: 20px 16px 40px;
+        }
+
+        /* Header Banner Sederhana */
+        .header-banner {
+            background: linear-gradient(135deg, #1e3a2f 0%, #2d6a4f 100%);
+            border-radius: 14px;
+            padding: 18px 24px;
+            color: #fff;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 14px;
+            box-shadow: 0 4px 14px rgba(30, 58, 47, 0.12);
+        }
+
+        .header-title-box h1 {
+            font-size: 20px;
+            margin: 0 0 4px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-title-box p {
+            font-size: 13px;
+            color: #d1e7dd;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .badge-admin {
+            background: #f59e0b;
+            color: #1e3a2f;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 12px;
+            letter-spacing: 0.3px;
+        }
+
+        .btn-back {
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            transition: 0.2s;
+        }
+
+        .btn-back:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        /* Status Bar Ringkas */
+        .status-strip {
+            background: #fff;
+            border: 1px solid #e8f0e6;
+            border-radius: 12px;
+            padding: 12px 18px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+            font-size: 13px;
+        }
+
+        .status-strip-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #2d6a4f;
+            font-weight: 600;
+        }
+
+        .status-strip-item span {
+            color: #5a7a6a;
+            font-weight: 400;
+        }
+
+        /* Card Section Sederhana */
+        .section-card {
+            background: #fff;
+            border-radius: 14px;
+            border: 1px solid #e8f0e6;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #f0f5ee;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1e3a2f;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title i {
+            color: #2d6a4f;
+        }
+
+        /* Tombol Aksi */
+        .header-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-sm-action {
+            padding: 7px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            transition: 0.2s;
+        }
+
+        .btn-add-key {
+            background: #2d6a4f;
+            color: #fff;
+        }
+        .btn-add-key:hover { background: #1b4332; }
+
+        .btn-studio-link {
+            background: #e0f2fe;
+            color: #0369a1;
+            border: 1px solid #bae6fd;
+        }
+        .btn-studio-link:hover { background: #bae6fd; }
+
+        .btn-test-all {
+            background: #f8faf7;
+            color: #2d6a4f;
+            border: 1px solid #d4e3d0;
+        }
+        .btn-test-all:hover { background: #e8f0e6; }
+
+        /* Select Dropdown Model Elegan */
+        .model-select-box {
+            position: relative;
+        }
+
+        .model-select-input {
+            width: 100%;
+            padding: 11px 16px;
+            border: 2px solid #e8f0e6;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e3a2f;
+            background: #fff;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            outline: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        }
+
+        .model-select-input:focus {
+            border-color: #2d6a4f;
+            box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.12);
+        }
+
+        .model-select-input optgroup {
+            font-weight: 700;
+            color: #2d6a4f;
+            background: #f8faf7;
+            padding: 4px;
+        }
+
+        .model-select-input option {
+            font-weight: 500;
+            color: #1e3a2f;
+            background: #fff;
+            padding: 8px;
+        }
+
+        .model-pill-badge {
+            background: #f4faf6;
+            border: 1.5px solid #2d6a4f;
+            border-radius: 10px;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 220px;
+        }
+
+        /* Tabel Kunci Ringkas */
+        .keys-table-simple {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .keys-table-simple th {
+            background: #f8faf7;
+            padding: 10px 12px;
+            font-weight: 600;
+            color: #1e3a2f;
+            text-align: left;
+            border-bottom: 2px solid #e8f0e6;
+        }
+
+        .keys-table-simple td {
+            padding: 12px;
+            border-bottom: 1px solid #f0f5ee;
+            vertical-align: middle;
+        }
+
+        .badge-status-aktif {
+            background: #dcfce7;
+            color: #15803d;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .badge-status-cadangan {
+            background: #fef3c7;
+            color: #b45309;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .key-text {
+            font-family: monospace;
+            background: #f4f6f3;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #2d6a4f;
+            font-size: 12px;
+            border: 1px solid #e0ede5;
+        }
+
+        .btn-table-act {
+            padding: 4px 8px;
+            border-radius: 6px;
+            border: none;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-left: 4px;
+            transition: 0.2s;
+        }
+
+        .btn-set-primary { background: #e8f5e9; color: #166534; }
+        .btn-set-primary:hover { background: #c8e6c9; }
+        .btn-test-one { background: #e0f2fe; color: #0369a1; }
+        .btn-test-one:hover { background: #bae6fd; }
+        .btn-del-key { background: #fee2e2; color: #b91c1c; }
+        .btn-del-key:hover { background: #fca5a5; }
+
+        /* Bottom Save Toolbar */
+        .bottom-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .btn-save-all {
+            background: #2d6a4f;
+            color: #fff;
+            padding: 10px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.2s;
+            box-shadow: 0 3px 10px rgba(45, 106, 79, 0.2);
+        }
+
+        .btn-save-all:hover {
+            background: #1b4332;
+            transform: translateY(-1px);
+        }
+
+        /* Modal Sederhana */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .modal-overlay.active { display: flex; }
+
+        .modal-box {
+            background: #fff;
+            width: 100%;
+            max-width: 480px;
+            border-radius: 14px;
+            padding: 22px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e8f0e6;
+        }
+
+        .modal-header h3 {
+            font-size: 16px;
+            color: #1e3a2f;
+            margin: 0;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 22px;
+            cursor: pointer;
+            color: #8aaa9a;
+        }
+
+        .form-group { margin-bottom: 14px; }
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #1e3a2f;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 9px 12px;
+            border: 1.5px solid #e8f0e6;
+            border-radius: 8px;
+            font-size: 13px;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            border-color: #2d6a4f;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #1e3a2f;
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+            z-index: 10000;
+            transform: translateY(80px);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page-container">
+
+        <!-- 1. Header Banner Bersih & Ringkas -->
+        <div class="header-banner">
+            <div class="header-title-box">
+                <h1><i class="fas fa-robot"></i> Konfigurasi AI & API Key</h1>
+                <p>
+                    <span class="badge-admin"><i class="fas fa-crown"></i> Admin Only</span>
+                    Pengaturan model chatbot dan rotasi kunci cadangan (*auto-failover*).
+                </p>
+            </div>
+            <a href="../dashboard.html" class="btn-back">
+                <i class="fas fa-arrow-left"></i> Kembali ke Dashboard
+            </a>
+        </div>
+
+        <!-- 2. Status Bar Ringkas (Menggantikan 4 Stat Card Besar) -->
+        <div class="status-strip">
+            <div class="status-strip-item">
+                <i class="fas fa-brain"></i>
+                <div><span>Model Utama:</span> <strong id="statActiveModelName">Gemini 1.5 Flash</strong></div>
+            </div>
+            <div class="status-strip-item">
+                <i class="fas fa-key"></i>
+                <div><span>Kunci Tersimpan:</span> <strong id="statTotalKeys">3 Kunci</strong></div>
+            </div>
+            <div class="status-strip-item">
+                <i class="fas fa-shield-alt" style="color: #16a34a;"></i>
+                <div><span>Auto-Failover:</span> <strong style="color: #16a34a;">Aktif</strong></div>
+            </div>
+        </div>
+
+        <!-- 3. Pilihan Model AI (Dropdown Selector Elegan & Simpel) -->
+        <div class="section-card" style="padding: 18px 22px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+                <div style="flex: 1; min-width: 280px;">
+                    <label for="aiModelSelect" style="display: flex; align-items: center; justify-content: space-between; font-size: 13px; font-weight: 700; color: #1e3a2f; margin-bottom: 8px;">
+                        <span><i class="fas fa-microchip" style="color: #2d6a4f; margin-right: 6px;"></i> Model AI Utama (Otak Chatbot)</span>
+                        <span style="font-weight: 500; font-size: 11px; color: #6a8c7b;">Pilih model kecerdasan buatan</span>
+                    </label>
+                    <div class="model-select-box">
+                        <select id="aiModelSelect" class="model-select-input" onchange="handleModelDropdownChange(this.value)">
+                            <optgroup label="🌟 Google Gemini (Rekomendasi)">
+                                <option value="gemini-1.5-flash">Gemini 1.5 Flash — Rekomendasi (Cepat & Hemat Kuota)</option>
+                                <option value="gemini-1.5-pro">Gemini 1.5 Pro — Super Cerdas (Analisis Mendalam)</option>
+                                <option value="gemini-2.0-flash-exp">Gemini 2.0 Flash — Eksperimental Terbaru</option>
+                                <option value="gemini-1.0-pro">Gemini 1.0 Pro — Klasik Stabil</option>
+                            </optgroup>
+                            <optgroup label="⚡ OpenAI ChatGPT">
+                                <option value="gpt-4o-mini">OpenAI GPT-4o Mini — Ringkas, Cepat & Cerdas</option>
+                                <option value="gpt-4o">OpenAI GPT-4o — Flagship Multimodal</option>
+                            </optgroup>
+                            <optgroup label="🚀 Open Source & Provider Lain">
+                                <option value="llama-3.3-70b-versatile">Meta Llama 3.3 70B (Groq) — Respons Kilat &lt;1 detik</option>
+                                <option value="deepseek-chat">DeepSeek-V3 / R1 — Penalaran Logika Tinggi</option>
+                                <option value="claude-3-5-sonnet">Claude 3.5 Sonnet (Anthropic) — Bahasa Luwes & Alami</option>
+                                <option value="mistral-small">Mistral Small — Ringkas & Presisi</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Info Pill Model Aktif -->
+                <div class="model-pill-badge" id="modelPillBadge">
+                    <div style="font-size: 24px; background: #e8f5e9; width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        🤖
+                    </div>
+                    <div>
+                        <div id="modelPillName" style="font-size: 14px; font-weight: 700; color: #1e3a2f;">Gemini 1.5 Flash</div>
+                        <div id="modelPillDesc" style="font-size: 11px; color: #2d6a4f; font-weight: 600;">Google Gemini • Rekomendasi</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. Daftar Kunci API & Kunci Cadangan -->
+        <div class="section-card">
+            <div class="section-header">
+                <div class="section-title">
+                    <i class="fas fa-key"></i> Kunci API & Cadangan
+                </div>
+                <div class="header-actions">
+                    <!-- Tombol langsung ke AI Studio sesuai permintaan user -->
+                    <a href="https://aistudio.google.com/app/apikey" target="_blank" class="btn-sm-action btn-studio-link" title="Buka website Google AI Studio untuk membuat API Key gratis">
+                        <i class="fab fa-google"></i> Buat Key di AI Studio
+                    </a>
+                    <button type="button" class="btn-sm-action btn-test-all" onclick="testAllKeysLive()">
+                        <i class="fas fa-vial"></i> Uji Semua
+                    </button>
+                    <button type="button" class="btn-sm-action btn-add-key" onclick="openAddKeyModal()">
+                        <i class="fas fa-plus"></i> Tambah Kunci
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tabel Kunci Sederhana -->
+            <div style="overflow-x: auto;">
+                <table class="keys-table-simple">
+                    <thead>
+                        <tr>
+                            <th style="width: 40px;">No</th>
+                            <th>Nama / Label</th>
+                            <th>Provider</th>
+                            <th>API Key</th>
+                            <th>Status</th>
+                            <th>Hasil Uji</th>
+                            <th style="text-align: right; width: 200px;">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="keysTableBody">
+                        <!-- Injected via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 5. Bottom Toolbar Simpan -->
+        <div class="bottom-bar">
+            <div style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: #5a7a6a;">
+                <span>Kreativitas AI:</span>
+                <input type="range" id="tempRange" min="0.1" max="1.0" step="0.05" value="0.3" oninput="updateTempDisplay(this.value)" style="accent-color: #2d6a4f; width: 120px;" />
+                <strong id="tempDisplay" style="color: #1e3a2f;">0.3</strong>
+                <span style="font-size: 11px; color: #8aaa9a;">(Standar Presisi)</span>
+            </div>
+
+            <button type="button" class="btn-save-all" onclick="saveAllConfigurations()">
+                <i class="fas fa-save"></i> Simpan Konfigurasi
+            </button>
+        </div>
+
+    </div>
+
+    <!-- ===== MODAL TAMBAH / EDIT KUNCI API ===== -->
+    <div class="modal-overlay" id="modalKey">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 id="modalKeyTitle"><i class="fas fa-key" style="color: #2d6a4f;"></i> Tambah Kunci Cadangan</h3>
+                <button type="button" class="close-btn" onclick="closeKeyModal()">&times;</button>
+            </div>
+            <form id="keyForm" onsubmit="handleSaveKeyFromModal(event)">
+                <input type="hidden" id="keyModalId" />
+
+                <div class="form-group">
+                    <label for="keyModalLabel">Nama / Label Kunci *</label>
+                    <input type="text" id="keyModalLabel" placeholder="Contoh: Google AI Studio - Akun 2" required />
+                </div>
+
+                <div class="form-group">
+                    <label for="keyModalProvider">Provider</label>
+                    <select id="keyModalProvider">
+                        <option value="gemini">Google Gemini (AI Studio)</option>
+                        <option value="openai">OpenAI (ChatGPT)</option>
+                        <option value="groq">Groq Cloud (Llama 3.3)</option>
+                        <option value="deepseek">DeepSeek</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+                        <label for="keyModalValue" style="margin:0;">API Key *</label>
+                        <a href="https://aistudio.google.com/app/apikey" target="_blank" style="font-size:12px; color:#0369a1; text-decoration:none;">
+                            <i class="fas fa-external-link-alt"></i> Buat di AI Studio
+                        </a>
+                    </div>
+                    <input type="password" id="keyModalValue" placeholder="Tempelkan API Key di sini (AIzaSy...)" required />
+                    <div style="text-align:right; margin-top:4px;">
+                        <button type="button" style="background:none; border:none; color:#2d6a4f; font-size:11px; cursor:pointer;" onclick="toggleKeyVisibility()">
+                            <i class="fas fa-eye" id="toggleEyeIcon"></i> Tampilkan Key
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-top: 10px;">
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; font-weight: normal;">
+                        <input type="checkbox" id="keyModalIsActive" />
+                        Jadikan Kunci Utama Sekarang
+                    </label>
+                </div>
+
+                <div style="margin-top: 18px; display: flex; justify-content: flex-end; gap: 8px;">
+                    <button type="button" class="btn-sm-action btn-test-all" onclick="closeKeyModal()">Batal</button>
+                    <button type="submit" class="btn-sm-action btn-add-key">
+                        <i class="fas fa-check"></i> Simpan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Alert -->
+    <div class="toast" id="toastBox">
+        <i class="fas fa-check-circle" id="toastIcon" style="color: #4ade80;"></i>
+        <span id="toastMsg">Berhasil disimpan!</span>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../js/auth.js"></script>
+    <script src="../js/ai-config.js"></script>
+</body>
+
+</html>

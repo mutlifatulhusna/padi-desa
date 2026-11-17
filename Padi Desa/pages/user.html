@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manajemen User - Platform Padi Desa Cirebon Girang</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="../css/style.css" />
+    <style>
+        /* Shared Styles with Dashboard & Pages */
+        .page-container {
+            padding: 0;
+        }
+
+        .header-banner {
+            background: linear-gradient(135deg, #1e3a2f 0%, #2d6a4f 100%);
+            border-radius: 16px;
+            padding: 24px;
+            color: #fff;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            box-shadow: 0 4px 14px rgba(30, 58, 47, 0.15);
+        }
+
+        .header-banner h1 {
+            font-size: 22px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 6px;
+        }
+
+        .header-banner p {
+            font-size: 14px;
+            color: #cfe3d0;
+        }
+
+        .header-banner .btn-back {
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s;
+        }
+
+        .header-banner .btn-back:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateX(-2px);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: #fff;
+            padding: 18px 20px;
+            border-radius: 14px;
+            border: 1px solid #e8f0e6;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .stat-card .stat-info .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1e3a2f;
+        }
+
+        .stat-card .stat-info .stat-label {
+            font-size: 13px;
+            color: #5a7a6a;
+        }
+
+        .stat-card .stat-icon {
+            font-size: 28px;
+            padding: 10px;
+            border-radius: 12px;
+        }
+
+        .icon-admin { background: #fef3c7; color: #d97706; }
+        .icon-perangkat { background: #dbeafe; color: #2563eb; }
+        .icon-kelompok { background: #dcfce7; color: #16a34a; }
+        .icon-petani { background: #ffedd5; color: #ea580c; }
+
+        /* Toolbar */
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 8px;
+            flex: 1;
+            max-width: 420px;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 10px 16px;
+            border: 2px solid #e8f0e6;
+            border-radius: 10px;
+            font-size: 14px;
+            background: #fff;
+            transition: 0.3s;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #2d6a4f;
+        }
+
+        .search-box button {
+            padding: 10px 18px;
+            background: #2d6a4f;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .search-box button:hover {
+            background: #1b4332;
+        }
+
+        .btn-add {
+            background: #2d6a4f;
+            color: #fff;
+            padding: 10px 22px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s;
+        }
+
+        .btn-add:hover {
+            background: #1b4332;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(45, 106, 79, 0.25);
+        }
+
+        /* Table */
+        .table-wrapper {
+            overflow-x: auto;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            border: 1px solid #e8f0e6;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        table thead {
+            background: #f8fbf7;
+            border-bottom: 2px solid #e8f0e6;
+        }
+
+        table th {
+            padding: 14px 16px;
+            text-align: left;
+            font-weight: 600;
+            color: #1e3a2f;
+            white-space: nowrap;
+        }
+
+        table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #f0f5ee;
+            vertical-align: middle;
+        }
+
+        table tbody tr:hover {
+            background: #fcfdfa;
+        }
+
+        .user-col {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar-badge {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #e8f0e6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .role-tag {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .role-admin { background: #fef3c7; color: #b45309; }
+        .role-perangkat { background: #dbeafe; color: #1d4ed8; }
+        .role-kelompok { background: #dcfce7; color: #15803d; }
+        .role-petani { background: #ffedd5; color: #c2410c; }
+
+        .table-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .table-actions button {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: 0.2s;
+        }
+
+        .btn-edit {
+            background: #fef3e8;
+            color: #b45309;
+        }
+
+        .btn-edit:hover {
+            background: #fde2c7;
+        }
+
+        .btn-delete {
+            background: #fde8e8;
+            color: #c0392b;
+        }
+
+        .btn-delete:hover {
+            background: #fbd0d0;
+        }
+
+        .btn-disabled {
+            background: #f3f4f6;
+            color: #9ca3af;
+            cursor: not-allowed !important;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 48px 20px;
+            display: none;
+            background: #fff;
+            border-radius: 16px;
+            border: 1px solid #e8f0e6;
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            color: #8aaa9a;
+            margin-bottom: 12px;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: #fff;
+            border-radius: 20px;
+            max-width: 520px;
+            width: 100%;
+            padding: 28px;
+            animation: modalIn 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        @keyframes modalIn {
+            from {
+                transform: scale(0.95);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid #e8f0e6;
+        }
+
+        .modal-header h2 {
+            font-size: 18px;
+            color: #1e3a2f;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #8aaa9a;
+            transition: 0.2s;
+        }
+
+        .close-modal:hover {
+            color: #1e3a2f;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #1e3a2f;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2px solid #e8f0e6;
+            border-radius: 10px;
+            font-size: 14px;
+            background: #fcfdfa;
+            transition: 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #2d6a4f;
+            background: #fff;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .form-note {
+            font-size: 12px;
+            color: #6a8c7b;
+            margin-top: 4px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px solid #e8f0e6;
+        }
+
+        .form-actions button {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-save {
+            background: #2d6a4f;
+            color: #fff;
+        }
+
+        .btn-save:hover {
+            background: #1b4332;
+        }
+
+        .btn-cancel {
+            background: #e8f0e6;
+            color: #1e3a2f;
+        }
+
+        .btn-cancel:hover {
+            background: #d4e0d0;
+        }
+
+        @media (max-width: 640px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            .header-banner {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ===== MODAL USER FORM ===== -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="modalTitle"><i class="fas fa-user-plus"></i> Tambah Pengguna Baru</h2>
+                <button class="close-modal" onclick="closeModal()">&times;</button>
+            </div>
+            <form id="userForm">
+                <input type="hidden" id="editId" />
+
+                <div class="form-group">
+                    <label for="name">Nama Lengkap *</label>
+                    <input type="text" id="name" placeholder="Contoh: Ahmad Fauzi" required />
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="username">Email / Username *</label>
+                        <input type="text" id="username" placeholder="user@desa.id" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="no_telepon">No. WhatsApp / HP</label>
+                        <input type="tel" id="no_telepon" placeholder="Contoh: 081234567890" />
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="role">Hak Akses (Role) *</label>
+                        <select id="role" required>
+                            <option value="admin">Admin</option>
+                            <option value="perangkat">Perangkat Desa</option>
+                            <option value="petani">Petani</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="avatar">Icon Avatar</label>
+                        <select id="avatar">
+                            <option value="👨‍💼">👨‍💼 Admin / Eksekutif</option>
+                            <option value="👨‍💻">👨‍💻 Perangkat Desa / Staf</option>
+                            <option value="👨‍🌾">👨‍🌾 Petani Pria</option>
+                            <option value="🧑‍🌾">🧑‍🌾 Petani Wanita</option>
+                            <option value="🌾">🌾 Padi / Lambang Tani</option>
+                            <option value="👤">👤 Pengguna Umum</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password <span id="pwdRequired">*</span></label>
+                    <input type="password" id="password" placeholder="Minimal 6 karakter" />
+                    <p class="form-note" id="pwdNote">Gunakan password yang aman.</p>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" onclick="closeModal()">Batal</button>
+                    <button type="submit" class="btn-save" id="btnSubmit">Simpan Pengguna</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===== MAIN CONTAINER ===== -->
+    <div class="page-container">
+        
+        <!-- Header Banner -->
+        <div class="header-banner">
+            <div>
+                <h1><i class="fas fa-user-shield"></i> Manajemen Pengguna Sistem</h1>
+                <p>Kelola akun, hak akses peran (Role), serta kredensial login pengguna Platform Padi Desa</p>
+            </div>
+            <a href="../dashboard.html" class="btn-back">
+                <i class="fas fa-arrow-left"></i> Kembali ke Dashboard
+            </a>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-info">
+                    <div class="stat-number" id="statTotalUsers">0</div>
+                    <div class="stat-label">Total Pengguna</div>
+                </div>
+                <div class="stat-icon icon-admin"><i class="fas fa-users"></i></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-info">
+                    <div class="stat-number" id="statAdmin">0</div>
+                    <div class="stat-label">Admin</div>
+                </div>
+                <div class="stat-icon icon-admin"><i class="fas fa-crown"></i></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-info">
+                    <div class="stat-number" id="statPerangkat">0</div>
+                    <div class="stat-label">Perangkat Desa</div>
+                </div>
+                <div class="stat-icon icon-perangkat"><i class="fas fa-landmark"></i></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-info">
+                    <div class="stat-number" id="statPetani">0</div>
+                    <div class="stat-label">Petani</div>
+                </div>
+                <div class="stat-icon icon-petani"><i class="fas fa-seedling"></i></div>
+            </div>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="toolbar">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Cari nama, email, atau role..." onkeyup="handleSearch(event)" />
+                <button onclick="handleSearch()"><i class="fas fa-search"></i></button>
+            </div>
+            <button class="btn-add" onclick="showAddModal()">
+                <i class="fas fa-plus-circle"></i> Tambah Pengguna
+            </button>
+        </div>
+
+        <!-- Table User List -->
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 50px;">No</th>
+                        <th>Pengguna</th>
+                        <th>Email / Username</th>
+                        <th>No. WhatsApp / HP</th>
+                        <th>Role / Peran</th>
+                        <th>Password Terdaftar</th>
+                        <th style="width: 130px; text-align: center;">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="userTableBody">
+                    <!-- Populated via JS -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state" id="emptyState">
+            <i class="fas fa-user-slash"></i>
+            <h3>Tidak Ada Data Pengguna</h3>
+            <p>Silakan buat pengguna baru dengan menekan tombol "Tambah Pengguna".</p>
+        </div>
+
+    </div>
+
+    <!-- ===== SCRIPTS ===== -->
+    <script src="../js/auth.js"></script>
+    <script src="../js/database.js"></script>
+    <script src="../js/user.js"></script>
+    <script src="../js/chatbot-widget.js?v=20261113_v25"></script>
+    <script>
+        // Check Access: Only Admin can access
+        const currentUser = auth.getCurrentUser();
+        if (!currentUser) {
+            window.location.href = '../login.html';
+        } else if (currentUser.role !== 'admin') {
+            alert('Akses Ditolak: Halaman Manajemen User hanya dapat diakses oleh Admin.');
+            window.location.href = '../dashboard.html';
+        }
+
+        // DOM Elements
+        const tableBody = document.getElementById('userTableBody');
+        const emptyState = document.getElementById('emptyState');
+        const modalOverlay = document.getElementById('modalOverlay');
+        const modalTitle = document.getElementById('modalTitle');
+        const form = document.getElementById('userForm');
+        const searchInput = document.getElementById('searchInput');
+
+        // Form Inputs
+        const inputEditId = document.getElementById('editId');
+        const inputName = document.getElementById('name');
+        const inputUsername = document.getElementById('username');
+        const inputNoTelepon = document.getElementById('no_telepon');
+        const inputRole = document.getElementById('role');
+        const inputPassword = document.getElementById('password');
+        const inputAvatar = document.getElementById('avatar');
+        const pwdRequired = document.getElementById('pwdRequired');
+        const pwdNote = document.getElementById('pwdNote');
+
+        // Stats Elements
+        const statTotalUsers = document.getElementById('statTotalUsers');
+        const statAdmin = document.getElementById('statAdmin');
+        const statPerangkat = document.getElementById('statPerangkat');
+        const statPetani = document.getElementById('statPetani');
+
+        // Load and Render Users
+        function loadData(keyword = '') {
+            let data = keyword ? UserManager.search(keyword) : UserManager.getAll();
+            renderTable(data);
+            updateStats();
+        }
+
+        function renderTable(users) {
+            tableBody.innerHTML = '';
+
+            if (!users || users.length === 0) {
+                emptyState.style.display = 'block';
+                document.querySelector('.table-wrapper').style.display = 'none';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            document.querySelector('.table-wrapper').style.display = 'block';
+
+            users.forEach((u, index) => {
+                const isCurrentSelf = currentUser && String(currentUser.id) === String(u.id);
+                const roleBadgeClass = `role-${u.role}`;
+                
+                // Mask password preview: show bullet dots with toggle option
+                const maskedPassword = u.password ? '••••••••' : '<span style="color:#9ca3af;">(belum diatur)</span>';
+
+                const waDisplay = u.no_telepon 
+                    ? `<a href="https://wa.me/${u.no_telepon.replace(/\D/g, '')}" target="_blank" style="color:#16a34a; text-decoration:none; font-weight:600; display:inline-flex; align-items:center; gap:6px;"><i class="fab fa-whatsapp" style="color:#25d366; font-size:15px;"></i> ${u.no_telepon}</a>` 
+                    : '<span style="color:#9ca3af; font-size:13px;">-</span>';
+
+                let deleteBtnHtml = isCurrentSelf
+                    ? `<button class="btn-disabled" title="Akun Anda yang sedang aktif" disabled><i class="fas fa-lock"></i></button>`
+                    : `<button class="btn-delete" title="Hapus Pengguna" onclick="deleteUser('${u.id}')"><i class="fas fa-trash-alt"></i></button>`;
+
+                tableBody.innerHTML += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>
+                            <div class="user-col">
+                                <div class="user-avatar-badge">${u.avatar || '👤'}</div>
+                                <div>
+                                    <strong>${u.name}</strong>
+                                    ${isCurrentSelf ? ' <span style="font-size:11px; background:#e8f0e6; color:#2d6a4f; padding:2px 8px; border-radius:10px; font-weight:600;">(Anda)</span>' : ''}
+                                </div>
+                            </div>
+                        </td>
+                        <td><code>${u.username}</code></td>
+                        <td>${waDisplay}</td>
+                        <td>
+                            <span class="role-tag ${roleBadgeClass}">
+                                ${u.roleLabel || u.role}
+                            </span>
+                        </td>
+                        <td>
+                            <span style="font-family: monospace; letter-spacing: 2px;">${maskedPassword}</span>
+                        </td>
+                        <td style="text-align: center;">
+                            <div class="table-actions" style="justify-content: center;">
+                                <button class="btn-edit" title="Edit Pengguna" onclick="editUser('${u.id}')">
+                                    <i class="fas fa-pencil-alt"></i> Edit
+                                </button>
+                                ${deleteBtnHtml}
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function updateStats() {
+            const all = UserManager.getAll();
+            statTotalUsers.textContent = all.length;
+            statAdmin.textContent = all.filter(u => u.role === 'admin').length;
+            statPerangkat.textContent = all.filter(u => u.role === 'perangkat' || u.role === 'desa').length;
+            statPetani.textContent = all.filter(u => u.role === 'petani').length;
+        }
+
+        // Search Handler
+        window.handleSearch = function(e) {
+            if (e && e.key && e.key !== 'Enter' && e.type !== 'click' && e.type !== 'keyup') return;
+            loadData(searchInput.value.trim());
+        };
+
+        // Modal Controls
+        window.showAddModal = function() {
+            form.reset();
+            inputEditId.value = '';
+            if (inputNoTelepon) inputNoTelepon.value = '';
+            inputPassword.required = true;
+            pwdRequired.style.display = 'inline';
+            pwdNote.textContent = 'Password default untuk login pertama kali.';
+            modalTitle.innerHTML = '<i class="fas fa-user-plus"></i> Tambah Pengguna Baru';
+            modalOverlay.classList.add('active');
+            inputName.focus();
+        };
+
+        window.closeModal = function() {
+            modalOverlay.classList.remove('active');
+        };
+
+        window.editUser = function(id) {
+            const user = UserManager.getById(id);
+            if (!user) return;
+
+            inputEditId.value = user.id;
+            inputName.value = user.name;
+            inputUsername.value = user.username;
+            if (inputNoTelepon) inputNoTelepon.value = user.no_telepon || '';
+            inputRole.value = user.role;
+            inputAvatar.value = user.avatar || '👨‍💼';
+            inputPassword.value = '';
+            inputPassword.required = false;
+            pwdRequired.style.display = 'none';
+            pwdNote.textContent = 'Kosongkan jika tidak ingin mengubah password yang sudah ada.';
+
+            modalTitle.innerHTML = '<i class="fas fa-user-edit"></i> Edit Pengguna';
+            modalOverlay.classList.add('active');
+        };
+
+        window.deleteUser = function(id) {
+            const user = UserManager.getById(id);
+            if (!user) return;
+
+            if (confirm(`Apakah Anda yakin ingin menghapus akun "${user.name}" (${user.username})?`)) {
+                if (UserManager.delete(id)) {
+                    loadData(searchInput.value.trim());
+                }
+            }
+        };
+
+        // Handle Form Submit
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const editId = inputEditId.value;
+            const name = inputName.value.trim();
+            const username = inputUsername.value.trim();
+            const no_telepon = inputNoTelepon ? inputNoTelepon.value.trim() : '';
+            const role = inputRole.value;
+            const password = inputPassword.value;
+            const avatar = inputAvatar.value;
+
+            // Check username uniqueness
+            if (UserManager.isUsernameTaken(username, editId ? editId : null)) {
+                alert(`Username / Email "${username}" sudah digunakan oleh akun lain. Silakan gunakan yang berbeda!`);
+                inputUsername.focus();
+                return;
+            }
+
+            if (editId) {
+                // Update
+                UserManager.update(editId, {
+                    name,
+                    username,
+                    no_telepon,
+                    role,
+                    password: password || undefined,
+                    avatar
+                });
+            } else {
+                // Create
+                if (!password || password.length < 4) {
+                    alert('Password minimal 4 karakter!');
+                    inputPassword.focus();
+                    return;
+                }
+                UserManager.create({
+                    name,
+                    username,
+                    no_telepon,
+                    role,
+                    password,
+                    avatar
+                });
+            }
+
+            closeModal();
+            loadData(searchInput.value.trim());
+        });
+
+        // Close on backdrop click
+        modalOverlay.addEventListener('click', function(e) {
+            if (e.target === modalOverlay) closeModal();
+        });
+
+        // Auto Sync Avatar based on Role Selection
+        inputRole.addEventListener('change', function() {
+            const roleAvatars = {
+                admin: '👨‍💼',
+                perangkat: '👨‍💻',
+                petani: '🧑‍🌾'
+            };
+            if (roleAvatars[this.value]) {
+                inputAvatar.value = roleAvatars[this.value];
+            }
+        });
+
+        // Initialize on load with MySQL sync
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (typeof UserManager.syncFromMySQL === 'function') {
+                await UserManager.syncFromMySQL();
+            }
+            loadData();
+        });
+    </script>
+</body>
+
+</html>

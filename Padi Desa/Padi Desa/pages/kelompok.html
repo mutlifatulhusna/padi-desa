@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kelompok Tani - Platform Padi Desa Cirebon Girang</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="../css/style.css" />
+    <style>
+        /* Shared styles similar to petani.html */
+        .page-container { padding: 0; }
+        .toolbar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 24px; }
+        .search-box { display: flex; gap: 8px; flex: 1; max-width: 400px; }
+        .search-box input { flex: 1; padding: 10px 16px; border: 2px solid #e8f0e6; border-radius: 10px; font-size: 14px; background: #f8fbf7; }
+        .search-box input:focus { outline: none; border-color: #2d6a4f; }
+        .search-box button { padding: 10px 20px; background: #2d6a4f; color: #fff; border: none; border-radius: 10px; cursor: pointer; }
+        .btn-add { background: #2d6a4f; color: #fff; padding: 10px 24px; border: none; border-radius: 10px; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; }
+        .table-wrapper { overflow-x: auto; background: #fff; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border: 1px solid #e8f0e6; }
+        table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        table thead { background: #f8fbf7; border-bottom: 2px solid #e8f0e6; }
+        table th { padding: 14px 16px; text-align: left; font-weight: 600; color: #1e3a2f; white-space: nowrap; }
+        table td { padding: 12px 16px; border-bottom: 1px solid #f0f5ee; vertical-align: middle; }
+        .table-actions button { padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; margin-right: 4px; }
+        .btn-edit { background: #fef3e8; color: #b45309; }
+        .btn-delete { background: #fde8e8; color: #c0392b; }
+        .empty-state { text-align: center; padding: 48px 20px; display: none; }
+        .empty-state i { font-size: 48px; color: #8aaa9a; margin-bottom: 12px; }
+
+        /* Modal */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center; padding: 20px; }
+        .modal-overlay.active { display: flex; }
+        .modal { background: #fff; border-radius: 20px; max-width: 500px; width: 100%; padding: 32px; animation: modalIn 0.3s ease; }
+        @keyframes modalIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .close-modal { background: none; border: none; font-size: 24px; cursor: pointer; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+        .form-group input { width: 100%; padding: 10px 14px; border: 2px solid #e8f0e6; border-radius: 10px; font-size: 14px; }
+        .form-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px; }
+        .form-actions button { padding: 10px 24px; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; }
+        .btn-save { background: #2d6a4f; color: #fff; }
+        .btn-cancel { background: #e8f0e6; color: #1e3a2f; }
+    </style>
+</head>
+<body>
+    <!-- MODAL -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="modalTitle">Tambah Kelompok Tani</h2>
+                <button class="close-modal" onclick="closeModal()">&times;</button>
+            </div>
+            <form id="kelompokForm">
+                <input type="hidden" id="editId" />
+                <div class="form-group">
+                    <label>Nama Kelompok Tani *</label>
+                    <input type="text" id="nama" required />
+                </div>
+                <div class="form-group">
+                    <label>Nama Ketua *</label>
+                    <input type="text" id="ketua" required />
+                </div>
+                <div class="form-group">
+                    <label>Jumlah Anggota</label>
+                    <input type="number" id="anggota" min="0" value="0" />
+                </div>
+                <div class="form-group">
+                    <label>Desa</label>
+                    <input type="text" id="desa" value="Cirebon Girang" />
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" onclick="closeModal()">Batal</button>
+                    <button type="submit" class="btn-save">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="page-container">
+        <div class="toolbar">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Cari kelompok tani..." onkeyup="handleSearch(event)" />
+                <button onclick="handleSearch()"><i class="fas fa-search"></i></button>
+            </div>
+            <button class="btn-add" id="btnAdd" onclick="showAddModal()"><i class="fas fa-plus"></i> Tambah Kelompok</button>
+        </div>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Nama Kelompok</th>
+                        <th>Ketua</th>
+                        <th>Anggota</th>
+                        <th>Desa</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+
+        <div class="empty-state" id="emptyState">
+            <i class="fas fa-users-cog"></i>
+            <h3>Belum Ada Data Kelompok</h3>
+        </div>
+    </div>
+
+    <script src="../js/auth.js"></script>
+    <script src="../js/database.js"></script>
+    <script src="../js/kelompok.js"></script>
+    <script src="../js/chatbot-widget.js?v=20261113_v25"></script>
+    <script>
+        const currentUser = auth.getCurrentUser();
+        if (!currentUser || !['admin', 'perangkat'].includes(currentUser.role)) {
+            window.location.href = '../dashboard.html';
+        }
+
+        const tableBody = document.getElementById('tableBody');
+        const emptyState = document.getElementById('emptyState');
+        const modalOverlay = document.getElementById('modalOverlay');
+        const form = document.getElementById('kelompokForm');
+        const searchInput = document.getElementById('searchInput');
+
+        // Admin can add/edit/delete. Perangkat can only view.
+        if (currentUser.role === 'perangkat') {
+            document.getElementById('btnAdd').style.display = 'none';
+        }
+
+        function loadData(keyword = '') {
+            let data = keyword ? KelompokManager.search(keyword) : KelompokManager.getAll();
+            renderTable(data);
+        }
+
+        function renderTable(data) {
+            tableBody.innerHTML = '';
+            if (data.length === 0) {
+                emptyState.style.display = 'block';
+                document.querySelector('.table-wrapper').style.display = 'none';
+                return;
+            }
+            emptyState.style.display = 'none';
+            document.querySelector('.table-wrapper').style.display = 'block';
+
+            data.forEach((k, i) => {
+                let actions = currentUser.role === 'admin' ? `
+                    <button class="btn-edit" onclick="editData('${k.id}')"><i class="fas fa-edit"></i></button>
+                    <button class="btn-delete" onclick="deleteData('${k.id}')"><i class="fas fa-trash"></i></button>
+                ` : `<span style="font-size:12px;color:#8aaa9a;"><i class="fas fa-eye"></i> View</span>`;
+
+                tableBody.innerHTML += `
+                    <tr>
+                        <td>${i + 1}</td>
+                        <td><strong>${k.nama}</strong></td>
+                        <td>${k.ketua}</td>
+                        <td>${k.anggota} Orang</td>
+                        <td>${k.desa}</td>
+                        <td class="table-actions">${actions}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        window.handleSearch = e => {
+            if (e && e.key !== 'Enter' && e.type !== 'click' && e.type !== 'keyup') return;
+            loadData(searchInput.value.trim());
+        };
+
+        window.showAddModal = () => {
+            form.reset();
+            document.getElementById('editId').value = '';
+            document.getElementById('modalTitle').textContent = 'Tambah Kelompok Tani';
+            modalOverlay.classList.add('active');
+        };
+
+        window.closeModal = () => modalOverlay.classList.remove('active');
+
+        window.editData = id => {
+            const k = KelompokManager.getById(id);
+            if (!k) return;
+            document.getElementById('editId').value = k.id;
+            document.getElementById('nama').value = k.nama;
+            document.getElementById('ketua').value = k.ketua;
+            document.getElementById('anggota').value = k.anggota;
+            document.getElementById('desa').value = k.desa;
+            document.getElementById('modalTitle').textContent = 'Edit Kelompok Tani';
+            modalOverlay.classList.add('active');
+        };
+
+        window.deleteData = id => {
+            if (confirm('Yakin hapus kelompok ini?')) {
+                KelompokManager.delete(id);
+                loadData();
+            }
+        };
+
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            const id = document.getElementById('editId').value;
+            const data = {
+                nama: document.getElementById('nama').value,
+                ketua: document.getElementById('ketua').value,
+                anggota: document.getElementById('anggota').value,
+                desa: document.getElementById('desa').value
+            };
+            id ? KelompokManager.update(id, data) : KelompokManager.create(data);
+            closeModal();
+            loadData();
+        });
+
+        loadData();
+    </script>
+</body>
+</html>

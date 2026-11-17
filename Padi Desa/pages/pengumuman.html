@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pengumuman - Platform Padi Desa Cirebon Girang</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="../css/style.css" />
+    <style>
+        .page-container { padding: 0; }
+        .toolbar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 24px; }
+        .search-box { display: flex; gap: 8px; flex: 1; max-width: 400px; }
+        .search-box input { flex: 1; padding: 10px 16px; border: 2px solid #e8f0e6; border-radius: 10px; font-size: 14px; background: #f8fbf7; }
+        .search-box input:focus { outline: none; border-color: #2d6a4f; }
+        .search-box button { padding: 10px 20px; background: #2d6a4f; color: #fff; border: none; border-radius: 10px; cursor: pointer; }
+        .btn-add { background: #2d6a4f; color: #fff; padding: 10px 24px; border: none; border-radius: 10px; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; }
+        
+        .pengumuman-grid { display: grid; gap: 20px; }
+        .pengumuman-card { background: #fff; border-radius: 16px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border-left: 4px solid #2d6a4f; position: relative; }
+        .pengumuman-header { display: flex; justify-content: space-between; margin-bottom: 12px; }
+        .pengumuman-title { font-size: 18px; font-weight: 700; color: #1e3a2f; }
+        .pengumuman-meta { font-size: 12px; color: #8aaa9a; display: flex; gap: 16px; margin-top: 4px; }
+        .pengumuman-content { color: #4a6b5a; font-size: 14px; line-height: 1.6; }
+        
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; display: inline-block; }
+        .badge-info { background: #e8f0fe; color: #1a56db; }
+        .badge-penyuluhan { background: #fef3e8; color: #b45309; }
+        
+        .card-actions { position: absolute; top: 24px; right: 24px; display: flex; gap: 8px; }
+        .card-actions button { padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; }
+        .btn-edit { background: #fef3e8; color: #b45309; }
+        .btn-delete { background: #fde8e8; color: #c0392b; }
+
+        .empty-state { text-align: center; padding: 48px 20px; display: none; }
+        .empty-state i { font-size: 48px; color: #8aaa9a; margin-bottom: 12px; }
+
+        /* Modal */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center; padding: 20px; }
+        .modal-overlay.active { display: flex; }
+        .modal { background: #fff; border-radius: 20px; max-width: 600px; width: 100%; padding: 32px; animation: modalIn 0.3s ease; }
+        @keyframes modalIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .close-modal { background: none; border: none; font-size: 24px; cursor: pointer; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 14px; border: 2px solid #e8f0e6; border-radius: 10px; font-size: 14px; }
+        .form-group textarea { min-height: 120px; resize: vertical; }
+        .form-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px; }
+        .form-actions button { padding: 10px 24px; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; }
+        .btn-save { background: #2d6a4f; color: #fff; }
+        .btn-cancel { background: #e8f0e6; color: #1e3a2f; }
+    </style>
+</head>
+<body>
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="modalTitle">Buat Pengumuman Baru</h2>
+                <button class="close-modal" onclick="closeModal()">&times;</button>
+            </div>
+            <form id="pengumumanForm">
+                <input type="hidden" id="editId" />
+                <div class="form-group">
+                    <label>Judul *</label>
+                    <input type="text" id="judul" required />
+                </div>
+                <div class="form-group">
+                    <label>Jenis Pengumuman</label>
+                    <select id="jenis">
+                        <option value="Informasi">Informasi Umum</option>
+                        <option value="Penyuluhan">Penyuluhan / Acara</option>
+                        <option value="Peringatan">Peringatan</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Konten / Isi *</label>
+                    <textarea id="konten" required></textarea>
+                </div>
+                <div class="form-group" id="waGroup" style="display:flex; align-items:center; gap:10px; background:#f0fdf4; padding:12px; border-radius:10px; border:1px solid #bbf7d0;">
+                    <input type="checkbox" id="sendWaNotification" checked style="width:18px; height:18px; accent-color:#16a34a; cursor:pointer;" />
+                    <label for="sendWaNotification" style="margin:0; cursor:pointer; color:#14532d; font-size:13px; font-weight:600;">
+                        <i class="fab fa-whatsapp" style="color:#16a34a; font-size:16px;"></i> Broadcast WhatsApp ke Seluruh Petani via Fonnte
+                    </label>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" onclick="closeModal()">Batal</button>
+                    <button type="submit" class="btn-save">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="page-container">
+        <div class="toolbar">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Cari pengumuman..." onkeyup="handleSearch(event)" />
+                <button onclick="handleSearch()"><i class="fas fa-search"></i></button>
+            </div>
+            <button class="btn-add" id="btnAdd" onclick="showAddModal()"><i class="fas fa-bullhorn"></i> Buat Pengumuman</button>
+        </div>
+
+        <div class="pengumuman-grid" id="listContainer"></div>
+
+        <div class="empty-state" id="emptyState">
+            <i class="fas fa-bell-slash"></i>
+            <h3>Belum Ada Pengumuman</h3>
+        </div>
+    </div>
+
+    <script src="../js/auth.js"></script>
+    <script src="../js/database.js"></script>
+    <script src="../js/pengumuman.js"></script>
+    <script src="../js/chatbot-widget.js?v=20261113_v25"></script>
+    <script>
+        const currentUser = auth.getCurrentUser();
+        if (!currentUser) window.location.href = '../login.html';
+
+        const listContainer = document.getElementById('listContainer');
+        const emptyState = document.getElementById('emptyState');
+        const modalOverlay = document.getElementById('modalOverlay');
+        const form = document.getElementById('pengumumanForm');
+        const searchInput = document.getElementById('searchInput');
+        
+        // Only admin & perangkat can create/edit/delete
+        const canManage = ['admin', 'perangkat'].includes(currentUser.role);
+        if (!canManage) {
+            document.getElementById('btnAdd').style.display = 'none';
+        }
+
+        function formatDate(dateStr) {
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            return new Date(dateStr).toLocaleDateString('id-ID', options);
+        }
+
+        function loadData(keyword = '') {
+            let data = keyword ? PengumumanManager.search(keyword) : PengumumanManager.getAll();
+            renderList(data);
+        }
+
+        function renderList(data) {
+            listContainer.innerHTML = '';
+            if (data.length === 0) {
+                emptyState.style.display = 'block';
+                return;
+            }
+            emptyState.style.display = 'none';
+
+            data.forEach(p => {
+                let badgeClass = 'badge-info';
+                if(p.jenis === 'Penyuluhan') badgeClass = 'badge-penyuluhan';
+                if(p.jenis === 'Peringatan') badgeClass = 'badge-info'; // You can add more
+
+                let actions = canManage ? `
+                    <div class="card-actions">
+                        <button type="button" class="btn-wa" title="Kirim/Broadcast ke WhatsApp Seluruh Petani" onclick="broadcastWA('${p.id}', event)"><i class="fab fa-whatsapp"></i> Broadcast WA</button>
+                        <button type="button" class="btn-edit" title="Edit Pengumuman" onclick="editData('${p.id}', event)"><i class="fas fa-edit"></i> Edit</button>
+                        <button type="button" class="btn-delete" title="Hapus Pengumuman" onclick="deleteData('${p.id}', event)"><i class="fas fa-trash"></i></button>
+                    </div>
+                ` : '';
+
+                listContainer.innerHTML += `
+                    <div class="pengumuman-card">
+                        <div class="pengumuman-header">
+                            <div>
+                                <div class="pengumuman-title">${p.judul}</div>
+                                <div class="pengumuman-meta">
+                                    <span><i class="far fa-calendar-alt"></i> ${formatDate(p.created_at)}</span>
+                                    <span class="badge ${badgeClass}">${p.jenis}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pengumuman-content">
+                            ${p.konten.replace(/\n/g, '<br/>')}
+                        </div>
+                        ${actions}
+                    </div>
+                `;
+            });
+        }
+
+        window.handleSearch = e => {
+            if (e && e.key !== 'Enter' && e.type !== 'click' && e.type !== 'keyup') return;
+            loadData(searchInput.value.trim());
+        };
+
+        window.showAddModal = () => {
+            form.reset();
+            document.getElementById("editId").value = "";
+            document.getElementById("modalTitle").textContent = "Buat Pengumuman Baru";
+            const waGroup = document.getElementById("waGroup");
+            if (waGroup) waGroup.style.display = "flex";
+            modalOverlay.classList.add("active");
+        };
+
+        window.closeModal = () => modalOverlay.classList.remove("active");
+
+        window.editData = (id, evt) => {
+            if (evt) evt.stopPropagation();
+            let p = PengumumanManager.getById(id);
+            if (!p) {
+                const all = PengumumanManager.getAll();
+                p = all.find(item => String(item.id) === String(id));
+            }
+            if (!p) {
+                alert("Data pengumuman tidak ditemukan.");
+                return;
+            }
+            document.getElementById("editId").value = p.id;
+            document.getElementById("judul").value = p.judul || "";
+            document.getElementById("jenis").value = p.jenis || "Informasi";
+            document.getElementById("konten").value = p.konten || "";
+            document.getElementById("modalTitle").textContent = "Edit Pengumuman";
+            
+            const waGroup = document.getElementById("waGroup");
+            if (waGroup) waGroup.style.display = "none";
+
+            modalOverlay.classList.add("active");
+        };
+
+        window.broadcastWA = async function(id, evt) {
+            if (evt) evt.stopPropagation();
+            let p = PengumumanManager.getById(id);
+            if (!p) {
+                const all = PengumumanManager.getAll();
+                p = all.find(item => String(item.id) === String(id));
+            }
+            if (!p) {
+                alert("Data pengumuman tidak ditemukan.");
+                return;
+            }
+
+            if (!confirm(`Kirim broadcast WhatsApp untuk "${p.judul}" ke seluruh nomor petani terdaftar via Fonnte?`)) {
+                return;
+            }
+
+            let targetBtn = null;
+            if (evt && evt.target) {
+                targetBtn = evt.target.closest("button");
+            }
+            if (targetBtn) {
+                targetBtn.disabled = true;
+                targetBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mengirim...';
+            }
+
+            try {
+                const res = await fetch("../api/whatsapp.php?broadcast_pengumuman", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ judul: p.judul, jenis: p.jenis, konten: p.konten })
+                });
+                const json = await res.json();
+                if (json.success) {
+                    alert(`✅ Sukses: ${json.message}`);
+                } else {
+                    alert(`⚠️ ${json.message || "Gagal mengirim broadcast WhatsApp"}`);
+                }
+            } catch (err) {
+                alert("Gagal menghubungi server WhatsApp: " + err.message);
+            } finally {
+                if (targetBtn) {
+                    targetBtn.disabled = false;
+                    targetBtn.innerHTML = '<i class="fab fa-whatsapp"></i> Broadcast WA';
+                }
+            }
+        };
+
+        window.deleteData = (id, evt) => {
+            if (evt) evt.stopPropagation();
+            let p = PengumumanManager.getById(id);
+            if (!p) {
+                const all = PengumumanManager.getAll();
+                p = all.find(item => String(item.id) === String(id));
+            }
+            const namaJudul = p ? p.judul : "pengumuman ini";
+            if (confirm(`Yakin hapus "${namaJudul}"?`)) {
+                PengumumanManager.delete(id);
+                loadData();
+            }
+        };
+
+        form.addEventListener("submit", async function(e) {
+            e.preventDefault();
+            const id = document.getElementById("editId").value;
+            const data = {
+                judul: document.getElementById("judul").value.trim(),
+                jenis: document.getElementById("jenis").value,
+                konten: document.getElementById("konten").value.trim(),
+                created_by: currentUser.id
+            };
+
+            const chkWA = document.getElementById("sendWaNotification");
+            const shouldBroadcast = !id && chkWA && chkWA.checked;
+
+            if (id) {
+                PengumumanManager.update(id, data);
+            } else {
+                PengumumanManager.create(data);
+            }
+
+            closeModal();
+            loadData();
+
+            if (shouldBroadcast) {
+                try {
+                    const res = await fetch("../api/whatsapp.php?broadcast_pengumuman", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(data)
+                    });
+                    const json = await res.json();
+                    if (json.success) {
+                        alert(`✅ Pengumuman berhasil disimpan dan ${json.message}`);
+                    }
+                } catch (err) {
+                    console.warn("Auto WA broadcast error:", err);
+                }
+            }
+        });
+
+        loadData();
+    </script>
+</body>
+</html>

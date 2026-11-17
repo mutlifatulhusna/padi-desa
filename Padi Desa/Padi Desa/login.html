@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - Platform Padi Desa Cirebon Girang</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="css/style.css" />
+    <style>
+        /* ===== LOGIN PAGE SPECIFIC ===== */
+        .login-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #f0f7ee 0%, #d4e8d0 100%);
+            padding: 20px;
+        }
+
+        .login-container {
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(30, 58, 47, 0.12);
+            padding: 48px 40px;
+            max-width: 440px;
+            width: 100%;
+            transition: 0.3s;
+        }
+
+        .login-container .logo-area {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .login-container .logo-area i {
+            font-size: 48px;
+            color: #2d6a4f;
+            background: #e8f3e6;
+            padding: 16px;
+            border-radius: 16px;
+            margin-bottom: 12px;
+        }
+
+        .login-container .logo-area h2 {
+            font-size: 24px;
+            color: #1e3a2f;
+            margin-bottom: 4px;
+        }
+
+        .login-container .logo-area p {
+            color: #4a6b5a;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e3a2f;
+            margin-bottom: 6px;
+        }
+
+        .form-group .input-wrapper {
+            position: relative;
+        }
+
+        .form-group .input-wrapper i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #4a6b5a;
+            font-size: 16px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 14px 12px 44px;
+            border: 2px solid #e8f0e6;
+            border-radius: 12px;
+            font-size: 15px;
+            transition: 0.3s;
+            background: #f8fbf7;
+            color: #1e3a2f;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #2d6a4f;
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(45, 106, 79, 0.08);
+        }
+
+        .form-group input::placeholder {
+            color: #8aaa9a;
+        }
+
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            font-size: 14px;
+        }
+
+        .form-options label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #3d5a4b;
+            cursor: pointer;
+        }
+
+        .form-options label input[type="checkbox"] {
+            accent-color: #2d6a4f;
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .form-options a {
+            color: #2d6a4f;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .form-options a:hover {
+            text-decoration: underline;
+        }
+
+        .btn-login-submit {
+            width: 100%;
+            padding: 14px;
+            background: #2d6a4f;
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-login-submit:hover {
+            background: #1b4332;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(45, 106, 79, 0.3);
+        }
+
+        .btn-login-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 14px;
+            margin-bottom: 16px;
+            display: none;
+        }
+
+        .alert.error {
+            display: block;
+            background: #fde8e8;
+            color: #c0392b;
+            border: 1px solid #f5c6c6;
+        }
+
+        .alert.success {
+            display: block;
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+
+        .login-footer {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 14px;
+            color: #4a6b5a;
+        }
+
+        .login-footer a {
+            color: #2d6a4f;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .login-footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* ===== ROLE BADGE ===== */
+        .role-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .role-badge.admin {
+            background: #e8f0fe;
+            color: #1a56db;
+        }
+
+        .role-badge.perangkat {
+            background: #fef3e8;
+            color: #b45309;
+        }
+
+        .role-badge.kelompok {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .role-badge.petani {
+            background: #f3e8ff;
+            color: #6b21a5;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 32px 20px;
+            }
+
+            .login-container .logo-area h2 {
+                font-size: 20px;
+            }
+
+            .form-options {
+                flex-direction: column;
+                gap: 8px;
+                align-items: flex-start;
+            }
+        }
+
+        /* ===== MODAL LUPA PASSWORD STYLES ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(3px);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-card {
+            background: #fff;
+            width: 100%;
+            max-width: 440px;
+            border-radius: 18px;
+            padding: 24px;
+            box-shadow: 0 16px 36px rgba(0, 0, 0, 0.22);
+            animation: modalFadeIn 0.25s ease-out;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-16px) scale(0.97); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e8f0e6;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 26px;
+            line-height: 1;
+            color: #8aaa9a;
+            cursor: pointer;
+            padding: 0 4px;
+            transition: 0.2s;
+        }
+
+        .modal-close:hover {
+            color: #1e3a2f;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="login-page">
+        <div class="login-container">
+            <!-- Logo -->
+            <div class="logo-area">
+                <div><i class="fas fa-seedling"></i></div>
+                <h2>Platform Padi</h2>
+                <p>Desa Cirebon Girang</p>
+            </div>
+
+            <!-- Alert -->
+            <div class="alert" id="loginAlert"></div>
+
+            <!-- Form Login -->
+            <form id="loginForm" autocomplete="off">
+                <div class="form-group">
+                    <label for="username">Email / Username</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="username" placeholder="Masukkan email atau username" required />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="password" placeholder="Masukkan password" required />
+                    </div>
+                </div>
+
+                <div class="form-options">
+                    <label>
+                        <input type="checkbox" id="rememberMe" />
+                        Ingat saya
+                    </label>
+                    <a href="javascript:void(0)" onclick="openLupaPasswordModal()">Lupa password?</a>
+                </div>
+
+                <button type="submit" class="btn-login-submit" id="loginBtn">
+                    <i class="fas fa-sign-in-alt"></i> Masuk
+                </button>
+            </form>
+
+            <div class="login-footer" style="margin-top: 24px;">
+                Belum punya akun? <a href="register.html" style="color: #2d6a4f; font-weight: 700;">Daftar di sini</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function fillLogin(u, p) {
+            const uInput = document.getElementById('username');
+            const pInput = document.getElementById('password');
+            if (uInput && pInput) {
+                uInput.value = u;
+                pInput.value = p;
+                uInput.focus();
+            }
+        }
+
+        // Auto-fill jika diarahkan setelah mendaftar akun baru
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const regUser = urlParams.get('registered_user');
+            if (regUser) {
+                const uInput = document.getElementById('username');
+                if (uInput) {
+                    uInput.value = regUser;
+                }
+                const pInput = document.getElementById('password');
+                if (pInput) {
+                    pInput.focus();
+                }
+                const alertEl = document.getElementById('loginAlert');
+                if (alertEl) {
+                    alertEl.textContent = '🎉 Pendaftaran berhasil! Silakan masukkan password untuk masuk.';
+                    alertEl.className = 'alert success';
+                    alertEl.style.display = 'block';
+                }
+            }
+        });
+
+        // ===== LUPA PASSWORD CONTROLLER =====
+        window.openLupaPasswordModal = function() {
+            const modal = document.getElementById('modalLupaPassword');
+            const alertBox = document.getElementById('forgotAlert');
+            if (alertBox) alertBox.style.display = 'none';
+
+            document.getElementById('stepForgotVerify').style.display = 'block';
+            document.getElementById('stepForgotReset').style.display = 'none';
+
+            document.getElementById('forgotEmail').value = document.getElementById('username').value || '';
+            document.getElementById('forgotWa').value = '';
+            document.getElementById('forgotNewPwd').value = '';
+            document.getElementById('forgotConfirmPwd').value = '';
+
+            modal.classList.add('active');
+            setTimeout(() => {
+                const el = document.getElementById('forgotEmail');
+                if (el) el.focus();
+            }, 100);
+        };
+
+        window.closeLupaPasswordModal = function() {
+            const modal = document.getElementById('modalLupaPassword');
+            if (modal) modal.classList.remove('active');
+        };
+
+        function showForgotAlert(msg, type = 'error') {
+            const alertBox = document.getElementById('forgotAlert');
+            if (!alertBox) return;
+            alertBox.textContent = msg;
+            alertBox.className = 'alert ' + (type === 'success' ? 'success' : 'error');
+            alertBox.style.display = 'block';
+        }
+
+        window.handleVerifyForgot = async function() {
+            const email = document.getElementById('forgotEmail').value.trim();
+            const noWa = document.getElementById('forgotWa').value.trim();
+            const btn = document.getElementById('btnVerifyForgot');
+
+            if (!email || !noWa) {
+                showForgotAlert('Mohon isi alamat email dan nomor WhatsApp terdaftar Anda!');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memverifikasi...';
+
+            try {
+                const res = await fetch('api/auth.php?action=forgot_password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: email, no_wa: noWa })
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    showForgotAlert(`✅ Identitas Terverifikasi: ${data.data.name}. Silakan tentukan kata sandi baru Anda.`, 'success');
+                    document.getElementById('stepForgotVerify').style.display = 'none';
+                    document.getElementById('stepForgotReset').style.display = 'block';
+                    setTimeout(() => {
+                        document.getElementById('forgotNewPwd').focus();
+                    }, 100);
+                } else {
+                    showForgotAlert(data.message || 'Data email dan nomor WhatsApp tidak cocok!');
+                }
+            } catch (err) {
+                console.error('Verify error:', err);
+                showForgotAlert('Terjadi kesalahan koneksi ke server.');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-check-circle"></i> Verifikasi Identitas';
+            }
+        };
+
+        window.handleSubmitResetPwd = async function() {
+            const email = document.getElementById('forgotEmail').value.trim();
+            const noWa = document.getElementById('forgotWa').value.trim();
+            const newPwd = document.getElementById('forgotNewPwd').value;
+            const confirmPwd = document.getElementById('forgotConfirmPwd').value;
+            const btn = document.getElementById('btnSubmitReset');
+
+            if (newPwd.length < 5) {
+                showForgotAlert('Kata sandi baru minimal harus 5 karakter!');
+                return;
+            }
+
+            if (newPwd !== confirmPwd) {
+                showForgotAlert('Konfirmasi kata sandi tidak cocok!');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mereset Sandi...';
+
+            try {
+                const res = await fetch('api/auth.php?action=forgot_password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: email,
+                        no_wa: noWa,
+                        new_password: newPwd
+                    })
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    closeLupaPasswordModal();
+                    // Fill login form
+                    const uInput = document.getElementById('username');
+                    const pInput = document.getElementById('password');
+                    if (uInput) uInput.value = email;
+                    if (pInput) {
+                        pInput.value = newPwd;
+                        pInput.focus();
+                    }
+                    const alertEl = document.getElementById('loginAlert');
+                    if (alertEl) {
+                        alertEl.textContent = '🎉 Kata sandi berhasil diperbarui di database! Silakan klik Masuk.';
+                        alertEl.className = 'alert success';
+                        alertEl.style.display = 'block';
+                    }
+                } else {
+                    showForgotAlert(data.message || 'Gagal mereset kata sandi!');
+                }
+            } catch (err) {
+                console.error('Reset error:', err);
+                showForgotAlert('Terjadi kesalahan koneksi ke server.');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-save"></i> Simpan Sandi Baru & Masuk';
+            }
+        };
+    </script>
+
+    <!-- ===== MODAL LUPA PASSWORD ===== -->
+    <div class="modal-overlay" id="modalLupaPassword">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div>
+                    <h3 style="margin: 0; color: #1e3a2f; font-size: 18px; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-key" style="color: #2d6a4f;"></i> Lupa Kata Sandi
+                    </h3>
+                    <p style="margin: 4px 0 0; color: #6a8c7b; font-size: 13px;">
+                        Verifikasi akun Anda dengan Gmail & WhatsApp.
+                    </p>
+                </div>
+                <button type="button" class="modal-close" onclick="closeLupaPasswordModal()">&times;</button>
+            </div>
+
+            <!-- Alert info -->
+            <div id="forgotAlert" class="alert" style="display: none; margin-bottom: 16px;"></div>
+
+            <!-- Step 1: Input Gmail & No WhatsApp -->
+            <div id="stepForgotVerify">
+                <div class="form-group" style="margin-bottom: 14px;">
+                    <label for="forgotEmail" style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #1e3a2f;">
+                        Alamat Email / Gmail Akun <span style="color: #e53e3e;">*</span>
+                    </label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="forgotEmail" placeholder="Contoh: user@gmail.com" required />
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label for="forgotWa" style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #1e3a2f;">
+                        Nomor WhatsApp Terdaftar <span style="color: #e53e3e;">*</span>
+                    </label>
+                    <div class="input-wrapper">
+                        <i class="fab fa-whatsapp"></i>
+                        <input type="tel" id="forgotWa" placeholder="Contoh: 081234567890" required />
+                    </div>
+                    <small style="color: #6a8c7b; font-size: 11px; display: block; margin-top: 4px;">
+                        Nomor WhatsApp yang terdaftar pada akun Anda.
+                    </small>
+                </div>
+
+                <button type="button" class="btn-login-submit" id="btnVerifyForgot" onclick="handleVerifyForgot()">
+                    <i class="fas fa-check-circle"></i> Verifikasi Identitas
+                </button>
+            </div>
+
+            <!-- Step 2: Form Password Baru (Muncul setelah verifikasi lolos) -->
+            <div id="stepForgotReset" style="display: none;">
+                <div class="form-group" style="margin-bottom: 14px;">
+                    <label for="forgotNewPwd" style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #1e3a2f;">
+                        Kata Sandi Baru <span style="color: #e53e3e;">*</span>
+                    </label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="forgotNewPwd" placeholder="Minimal 5 karakter" minlength="5" required />
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label for="forgotConfirmPwd" style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #1e3a2f;">
+                        Konfirmasi Kata Sandi Baru <span style="color: #e53e3e;">*</span>
+                    </label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-shield-alt"></i>
+                        <input type="password" id="forgotConfirmPwd" placeholder="Ulangi kata sandi baru" minlength="5" required />
+                    </div>
+                </div>
+
+                <button type="button" class="btn-login-submit" id="btnSubmitReset" onclick="handleSubmitResetPwd()">
+                    <i class="fas fa-save"></i> Simpan Sandi Baru & Masuk
+                </button>
+            </div>
+        </div>
+    </div>
+    </script>
+    <script src="js/auth.js?v=20261111_final"></script>
+</body>
+
+</html>

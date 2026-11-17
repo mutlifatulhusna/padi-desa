@@ -1,0 +1,14 @@
+{
+  "name": "padi-desa-app",
+  "version": "1.0.0",
+  "description": "Platform Padi Desa Cirebon Girang",
+  "scripts": {
+    "dev": "node \"chatbot/server.js\"",
+    "start": "node \"chatbot/server.js\"",
+    "chatbot": "node \"chatbot/server.js\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
+

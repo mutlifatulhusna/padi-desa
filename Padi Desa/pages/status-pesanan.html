@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Status Pesanan - Padi Desa Cirebon Girang</title>
+    <meta name="description" content="Pantau status pesanan beras Anda dari Padi Desa Cirebon Girang secara real-time." />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Inter','Segoe UI',sans-serif; background:#f0f7f0; color:#1e3a2f; min-height:100vh; }
+        .page-header { background:linear-gradient(135deg,#1b4332 0%,#2d6a4f 60%,#40916c 100%); color:#fff; padding:28px 24px 48px; text-align:center; position:relative; overflow:hidden; }
+        .page-header::before { content:''; position:absolute; top:-60px; right:-60px; width:220px; height:220px; background:rgba(255,255,255,0.05); border-radius:50%; }
+        .back-btn { position:absolute; top:20px; left:20px; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.25); color:#fff; padding:8px 16px; border-radius:30px; font-size:13px; font-weight:500; cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; gap:6px; transition:0.3s; }
+        .back-btn:hover { background:rgba(255,255,255,0.25); }
+        .page-header .header-icon { font-size:52px; margin-bottom:12px; display:block; }
+        .page-header h1 { font-size:26px; font-weight:800; margin-bottom:6px; }
+        .page-header p { font-size:14px; color:rgba(255,255,255,0.8); }
+        .main-container { max-width:680px; margin:-24px auto 40px; padding:0 16px; position:relative; z-index:10; }
+        .order-info-card { background:#fff; border-radius:20px; padding:20px 24px; margin-bottom:20px; box-shadow:0 4px 20px rgba(0,0,0,0.08); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; }
+        .order-id-group .label { font-size:12px; color:#6b8f7a; font-weight:500; text-transform:uppercase; letter-spacing:0.5px; }
+        .order-id-group .order-id { font-size:18px; font-weight:700; color:#1b4332; }
+        .order-date { font-size:13px; color:#6b8f7a; text-align:right; }
+        .demo-controls { background:#fff; border-radius:16px; padding:18px 20px; margin-bottom:24px; box-shadow:0 2px 12px rgba(0,0,0,0.06); border:1px solid #e0ede5; }
+        .demo-controls p { font-size:13px; color:#6b8f7a; margin-bottom:12px; font-weight:500; }
+        .status-tabs { display:flex; gap:8px; flex-wrap:wrap; }
+        .status-tab { padding:9px 18px; border-radius:30px; border:2px solid #e0ede5; background:transparent; font-size:13px; font-weight:600; cursor:pointer; transition:0.25s; color:#4a6b5a; }
+        .status-tab:hover { border-color:#2d6a4f; color:#2d6a4f; }
+        .status-tab.active-tab { background:#2d6a4f; border-color:#2d6a4f; color:#fff; box-shadow:0 4px 12px rgba(45,106,79,0.3); }
+        .notification-card { border-radius:20px; padding:28px; margin-bottom:24px; position:relative; overflow:hidden; box-shadow:0 8px 32px rgba(0,0,0,0.1); display:none; animation:slideIn 0.4s cubic-bezier(0.22,1,0.36,1); }
+        .notification-card.visible { display:block; }
+        @keyframes slideIn { from{opacity:0;transform:translateY(20px) scale(0.97)} to{opacity:1;transform:translateY(0) scale(1)} }
+        .card-confirmed { background:linear-gradient(135deg,#e8f5e9 0%,#f1f8f2 100%); border:1.5px solid #a5d6a7; }
+        .card-shipping  { background:linear-gradient(135deg,#e3f2fd 0%,#f0f8ff 100%); border:1.5px solid #90caf9; }
+        .card-arrived   { background:linear-gradient(135deg,#fff8e1 0%,#fffde7 100%); border:1.5px solid #ffe082; }
+        .notif-header { display:flex; align-items:flex-start; gap:16px; margin-bottom:18px; }
+        .notif-icon-wrap { width:60px; height:60px; border-radius:16px; display:flex; align-items:center; justify-content:center; font-size:28px; flex-shrink:0; }
+        .card-confirmed .notif-icon-wrap { background:linear-gradient(135deg,#2d6a4f,#40916c); box-shadow:0 6px 16px rgba(45,106,79,0.35); }
+        .card-shipping  .notif-icon-wrap { background:linear-gradient(135deg,#1565c0,#1976d2); box-shadow:0 6px 16px rgba(21,101,192,0.35); }
+        .card-arrived   .notif-icon-wrap { background:linear-gradient(135deg,#f57f17,#ffa000); box-shadow:0 6px 16px rgba(245,127,23,0.35); }
+        .status-label { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px; }
+        .card-confirmed .status-label { color:#2d6a4f; }
+        .card-shipping  .status-label { color:#1565c0; }
+        .card-arrived   .status-label { color:#e65100; }
+        .notif-title-group h2 { font-size:20px; font-weight:800; color:#1e3a2f; line-height:1.3; }
+        .notif-divider { height:1px; margin:0 0 18px; }
+        .card-confirmed .notif-divider { background:#a5d6a7; }
+        .card-shipping  .notif-divider { background:#90caf9; }
+        .card-arrived   .notif-divider { background:#ffe082; }
+        .notif-message { font-size:15px; line-height:1.8; color:#2e4a3e; margin-bottom:22px; }
+        .progress-tracker { display:flex; align-items:center; justify-content:space-between; margin-bottom:22px; position:relative; }
+        .progress-tracker::before { content:''; position:absolute; top:20px; left:20px; right:20px; height:3px; background:#ddd; z-index:0; }
+        .progress-track-fill { position:absolute; top:20px; left:20px; height:3px; background:linear-gradient(90deg,#2d6a4f,#40916c); z-index:1; transition:width 0.6s ease; }
+        .track-step { display:flex; flex-direction:column; align-items:center; gap:6px; z-index:2; flex:1; }
+        .track-dot { width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px; border:3px solid #ddd; background:#fff; transition:0.3s; }
+        .track-dot.done { background:#2d6a4f; border-color:#2d6a4f; color:#fff; box-shadow:0 4px 12px rgba(45,106,79,0.4); }
+        .track-dot.active { background:#fff; border-color:#2d6a4f; color:#2d6a4f; box-shadow:0 0 0 4px rgba(45,106,79,0.15); animation:pulse 2s infinite; }
+        .track-dot.pending { background:#f5f5f5; border-color:#ddd; color:#bbb; }
+        @keyframes pulse { 0%,100%{box-shadow:0 0 0 4px rgba(45,106,79,0.15)} 50%{box-shadow:0 0 0 8px rgba(45,106,79,0.08)} }
+        .track-label { font-size:11px; font-weight:600; color:#6b8f7a; text-align:center; max-width:64px; }
+        .track-label.active-label { color:#2d6a4f; }
+        .notif-info-row { display:flex; gap:8px; flex-wrap:wrap; }
+        .info-chip { display:inline-flex; align-items:center; gap:6px; padding:7px 14px; border-radius:30px; font-size:13px; font-weight:600; }
+        .card-confirmed .info-chip { background:rgba(45,106,79,0.1); color:#1b4332; }
+        .card-shipping  .info-chip { background:rgba(21,101,192,0.1); color:#0d47a1; }
+        .card-arrived   .info-chip { background:rgba(230,81,0,0.1); color:#bf360c; }
+        .timeline-section { background:#fff; border-radius:20px; padding:22px 24px; box-shadow:0 4px 16px rgba(0,0,0,0.06); margin-bottom:24px; }
+        .timeline-section h3 { font-size:15px; font-weight:700; color:#1e3a2f; margin-bottom:18px; display:flex; align-items:center; gap:8px; }
+        .timeline { position:relative; padding-left:28px; }
+        .timeline::before { content:''; position:absolute; left:9px; top:6px; bottom:6px; width:2px; background:linear-gradient(to bottom,#2d6a4f,#e0ede5); }
+        .timeline-item { position:relative; margin-bottom:20px; opacity:0.4; transition:0.3s; }
+        .timeline-item.active-item { opacity:1; }
+        .timeline-item:last-child { margin-bottom:0; }
+        .timeline-dot { position:absolute; left:-23px; top:2px; width:18px; height:18px; border-radius:50%; border:2px solid #c8ddd0; background:#fff; display:flex; align-items:center; justify-content:center; }
+        .timeline-item.active-item .timeline-dot { background:#2d6a4f; border-color:#2d6a4f; }
+        .timeline-dot-inner { width:8px; height:8px; border-radius:50%; background:#c8ddd0; }
+        .timeline-item.active-item .timeline-dot-inner { background:#fff; }
+        .timeline-content .time { font-size:11px; color:#8aaa9a; font-weight:500; margin-bottom:2px; }
+        .timeline-content .event-title { font-size:14px; font-weight:700; color:#1e3a2f; }
+        .timeline-content .event-desc { font-size:13px; color:#6b8f7a; margin-top:2px; line-height:1.5; }
+        .contact-section { background:linear-gradient(135deg,#1b4332,#2d6a4f); border-radius:20px; padding:22px 24px; color:#fff; display:flex; align-items:center; gap:16px; box-shadow:0 8px 24px rgba(27,67,50,0.3); }
+        .contact-icon { width:52px; height:52px; background:rgba(255,255,255,0.15); border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; }
+        .contact-text h4 { font-size:15px; font-weight:700; margin-bottom:3px; }
+        .contact-text p { font-size:13px; color:rgba(255,255,255,0.75); }
+        .contact-btn { margin-left:auto; background:rgba(255,255,255,0.2); border:1px solid rgba(255,255,255,0.3); color:#fff; padding:9px 18px; border-radius:30px; font-size:13px; font-weight:600; cursor:pointer; text-decoration:none; transition:0.3s; white-space:nowrap; display:inline-flex; align-items:center; gap:6px; }
+        .contact-btn:hover { background:rgba(255,255,255,0.3); }
+        .toast-container { position:fixed; top:20px; right:20px; z-index:9999; display:flex; flex-direction:column; gap:10px; }
+        .toast { background:#fff; border-radius:14px; padding:14px 18px; box-shadow:0 8px 32px rgba(0,0,0,0.14); display:flex; align-items:flex-start; gap:12px; min-width:300px; max-width:360px; border-left:4px solid #2d6a4f; animation:toastIn 0.4s cubic-bezier(0.22,1,0.36,1); position:relative; }
+        @keyframes toastIn { from{opacity:0;transform:translateX(40px)} to{opacity:1;transform:translateX(0)} }
+        .toast.toast-shipping { border-color:#1565c0; }
+        .toast.toast-arrived  { border-color:#f57f17; }
+        .toast-icon { font-size:22px; flex-shrink:0; margin-top:2px; }
+        .toast-body .toast-title { font-size:14px; font-weight:700; color:#1e3a2f; margin-bottom:2px; }
+        .toast-body .toast-text  { font-size:13px; color:#4a6b5a; line-height:1.4; }
+        .toast-close { position:absolute; top:10px; right:12px; background:none; border:none; font-size:18px; color:#aaa; cursor:pointer; }
+        .toast-close:hover { color:#555; }
+        @media(max-width:480px){
+            .page-header h1{font-size:20px}
+            .notification-card{padding:18px}
+            .notif-title-group h2{font-size:17px}
+            .progress-tracker{display:none}
+            .contact-section{flex-direction:column;text-align:center}
+            .contact-btn{margin-left:0}
+            .order-info-card{flex-direction:column}
+            .order-date{text-align:left}
+            .toast{min-width:260px}
+        }
+    </style>
+</head>
+<body>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<div class="page-header">
+    <a href="../dashboard.html" class="back-btn"><i class="fas fa-arrow-left"></i> Dashboard</a>
+    <span class="header-icon">📦</span>
+    <h1>Status Pesanan</h1>
+    <p>Pantau perjalanan pesanan beras kamu secara real-time</p>
+</div>
+
+<div class="main-container">
+
+    <div class="order-info-card">
+        <div class="order-id-group">
+            <div class="label">Nomor Pesanan</div>
+            <div class="order-id">#PD-2026-00847</div>
+        </div>
+        <div class="order-date">
+            <div style="font-size:12px;color:#8aaa9a;">Tanggal Pesan</div>
+            <div style="font-weight:600;color:#1b4332;">1 November 2026</div>
+        </div>
+    </div>
+
+    <div class="demo-controls">
+        <p><i class="fas fa-hand-pointer" style="color:#2d6a4f;"></i>&nbsp; Pilih status untuk melihat notifikasi:</p>
+        <div class="status-tabs">
+            <button class="status-tab active-tab" id="tab-confirmed" onclick="showStatus('confirmed')">✅ Dikonfirmasi</button>
+            <button class="status-tab" id="tab-shipping" onclick="showStatus('shipping')">🚚 Dalam Pengiriman</button>
+            <button class="status-tab" id="tab-arrived" onclick="showStatus('arrived')">📍 Telah Tiba</button>
+        </div>
+    </div>
+
+    <!-- NOTIFIKASI 1: DIKONFIRMASI -->
+    <div class="notification-card card-confirmed visible" id="notif-confirmed">
+        <div class="notif-header">
+            <div class="notif-icon-wrap">🎉</div>
+            <div class="notif-title-group">
+                <div class="status-label">✅ Pesanan Dikonfirmasi &amp; Diproses</div>
+                <h2>Pesananmu telah dikonfirmasi!</h2>
+            </div>
+        </div>
+        <div class="notif-divider"></div>
+        <p class="notif-message">
+            Kami sedang memproses pesananmu dengan penuh perhatian. Tenang saja, beras padi segar dari desa sedang disiapkan dengan baik untukmu. Kami akan segera mengabari kamu ketika pesanan sudah dalam perjalanan. 🌾
+        </p>
+        <div class="progress-tracker">
+            <div class="progress-track-fill" style="width:16%;"></div>
+            <div class="track-step">
+                <div class="track-dot done"><i class="fas fa-check"></i></div>
+                <div class="track-label active-label">Dikonfirmasi</div>
+            </div>
+            <div class="track-step">
+                <div class="track-dot pending">🚚</div>
+                <div class="track-label">Dikirim</div>
+            </div>
+            <div class="track-step">
+                <div class="track-dot pending">📍</div>
+                <div class="track-label">Tiba</div>
+            </div>
+        </div>
+        <div class="notif-info-row">
+            <span class="info-chip"><i class="fas fa-box"></i> Beras 25 kg</span>
+            <span class="info-chip"><i class="fas fa-clock"></i> Estimasi 1–2 hari</span>
+            <span class="info-chip"><i class="fas fa-seedling"></i> Padi Desa</span>
+        </div>
+    </div>
+
+    <!-- NOTIFIKASI 2: DALAM PENGIRIMAN -->
+    <div class="notification-card card-shipping" id="notif-shipping">
+        <div class="notif-header">
+            <div class="notif-icon-wrap">📦</div>
+            <div class="notif-title-group">
+                <div class="status-label">🚚 Sedang Dikirim</div>
+                <h2>Pesananmu sedang dalam perjalanan!</h2>
+            </div>
+        </div>
+        <div class="notif-divider"></div>
+        <p class="notif-message">
+            Beras segar dari desa sudah meluncur menuju lokasimu! Harap siapkan tempat penerimaan ya. Kami memastikan pesananmu tiba dalam kondisi terbaik. Tidak perlu khawatir, setiap langkah pengirimannya kami pantau. 🚛✨
+        </p>
+        <div class="progress-tracker">
+            <div class="progress-track-fill" style="width:50%;"></div>
+            <div class="track-step">
+                <div class="track-dot done"><i class="fas fa-check"></i></div>
+                <div class="track-label">Dikonfirmasi</div>
+            </div>
+            <div class="track-step">
+                <div class="track-dot active">🚚</div>
+                <div class="track-label active-label">Dikirim</div>
+            </div>
+            <div class="track-step">
+                <div class="track-dot pending">📍</div>
+                <div class="track-label">Tiba</div>
+            </div>
+        </div>
+        <div class="notif-info-row">
+            <span class="info-chip"><i class="fas fa-truck"></i> Kurir sedang bertugas</span>
+            <span class="info-chip"><i class="fas fa-map-marker-alt"></i> Menuju lokasimu</span>
+        </div>
+    </div>
+
+    <!-- NOTIFIKASI 3: TELAH TIBA -->
+    <div class="notification-card card-arrived" id="notif-arrived">
+        <div class="notif-header">
+            <div class="notif-icon-wrap">✅</div>
+            <div class="notif-title-group">
+                <div class="status-label">📍 Pesanan Tiba</div>
+                <h2>Pesananmu sudah tiba di lokasimu!</h2>
+            </div>
+        </div>
+        <div class="notif-divider"></div>
+        <p class="notif-message">
+            Hore! 🎉 Beras dari Padi Desa sudah sampai di tanganmu. Semoga bermanfaat dan selamat menikmati nasi yang lezat dari hasil panen terbaik desa kami. Jangan lupa berikan ulasan ya — itu sangat membantu kami tumbuh! 😊🌾
+        </p>
+        <div class="progress-tracker">
+            <div class="progress-track-fill" style="width:83%;"></div>
+            <div class="track-step">
+                <div class="track-dot done"><i class="fas fa-check"></i></div>
+                <div class="track-label">Dikonfirmasi</div>
+            </div>
+            <div class="track-step">
+                <div class="track-dot done"><i class="fas fa-check"></i></div>
+                <div class="track-label">Dikirim</div>
+            </div>
+            <div class="track-step">
+                <div class="track-dot done"><i class="fas fa-check"></i></div>
+                <div class="track-label active-label">Tiba!</div>
+            </div>
+        </div>
+        <div class="notif-info-row">
+            <span class="info-chip"><i class="fas fa-star"></i> Beri Ulasan</span>
+            <span class="info-chip"><i class="fas fa-heart"></i> Terima Kasih!</span>
+            <span class="info-chip"><i class="fas fa-redo"></i> Pesan Lagi</span>
+        </div>
+    </div>
+
+    <!-- TIMELINE -->
+    <div class="timeline-section">
+        <h3><i class="fas fa-history" style="color:#2d6a4f;"></i> Riwayat Perjalanan Pesanan</h3>
+        <div class="timeline" id="orderTimeline"></div>
+    </div>
+
+    <!-- CONTACT -->
+    <div class="contact-section">
+        <div class="contact-icon">🌾</div>
+        <div class="contact-text">
+            <h4>Ada Pertanyaan?</h4>
+            <p>Tim Padi Desa siap membantu kamu kapan saja.</p>
+        </div>
+        <a href="https://wa.me/6281234567890" target="_blank" class="contact-btn">
+            <i class="fab fa-whatsapp"></i> Hubungi Kami
+        </a>
+    </div>
+
+</div>
+
+<script>
+const timelineData = {
+    confirmed: [
+        { time:'19:30 &bull; 1 Nov 2026', title:'✅ Pesanan Dikonfirmasi', desc:'Pesananmu berhasil diterima dan sedang diproses oleh tim kami.', active:true },
+        { time:'Menunggu proses...', title:'🚚 Persiapan Pengiriman', desc:'Pesanan akan segera disiapkan untuk dikirim.', active:false },
+        { time:'Menunggu...', title:'📍 Tiba di Lokasi', desc:'Pesanan belum tiba.', active:false }
+    ],
+    shipping: [
+        { time:'19:30 &bull; 1 Nov 2026', title:'✅ Pesanan Dikonfirmasi', desc:'Pesananmu berhasil diterima dan diproses.', active:true },
+        { time:'08:15 &bull; 2 Nov 2026', title:'🚚 Pesanan Dikirim', desc:'Kurir sedang membawa berasmu menuju lokasimu. Harap siapkan tempat!', active:true },
+        { time:'Dalam perjalanan...', title:'📍 Tiba di Lokasi', desc:'Estimasi tiba hari ini.', active:false }
+    ],
+    arrived: [
+        { time:'19:30 &bull; 1 Nov 2026', title:'✅ Pesanan Dikonfirmasi', desc:'Pesananmu berhasil diterima dan diproses.', active:true },
+        { time:'08:15 &bull; 2 Nov 2026', title:'🚚 Pesanan Dikirim', desc:'Kurir membawa beras menuju lokasimu.', active:true },
+        { time:'13:47 &bull; 2 Nov 2026', title:'📍 Pesanan Tiba!', desc:'Beras dari Padi Desa sudah sampai. Selamat menikmati! 🎉', active:true }
+    ]
+};
+
+const toastMessages = {
+    confirmed: { icon:'🎉', title:'Pesanan Dikonfirmasi!', text:'Berasmu sedang disiapkan dengan penuh cinta. 🌾', cls:'' },
+    shipping:  { icon:'🚚', title:'Pesanan Sedang Dikirim!', text:'Berasmu sedang dalam perjalanan menuju lokasimu.', cls:'toast-shipping' },
+    arrived:   { icon:'📍', title:'Pesanan Telah Tiba!', text:'Selamat menikmati beras dari Padi Desa! 😊', cls:'toast-arrived' }
+};
+
+function showStatus(status) {
+    document.querySelectorAll('.notification-card').forEach(c => c.classList.remove('visible'));
+    document.getElementById('notif-' + status).classList.add('visible');
+    document.querySelectorAll('.status-tab').forEach(t => t.classList.remove('active-tab'));
+    document.getElementById('tab-' + status).classList.add('active-tab');
+    renderTimeline(status);
+    showToast(status);
+}
+
+function renderTimeline(status) {
+    const container = document.getElementById('orderTimeline');
+    container.innerHTML = timelineData[status].map(item => `
+        <div class="timeline-item ${item.active ? 'active-item' : ''}">
+            <div class="timeline-dot"><div class="timeline-dot-inner"></div></div>
+            <div class="timeline-content">
+                <div class="time">${item.time}</div>
+                <div class="event-title">${item.title}</div>
+                <div class="event-desc">${item.desc}</div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function showToast(status) {
+    const t = toastMessages[status];
+    const container = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.className = 'toast ' + t.cls;
+    toast.innerHTML = `
+        <div class="toast-icon">${t.icon}</div>
+        <div class="toast-body">
+            <div class="toast-title">${t.title}</div>
+            <div class="toast-text">${t.text}</div>
+        </div>
+        <button class="toast-close" onclick="this.parentElement.remove()">&#x2715;</button>
+    `;
+    container.appendChild(toast);
+    setTimeout(() => {
+        if (toast.parentElement) {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateX(40px)';
+            toast.style.transition = '0.3s';
+            setTimeout(() => toast.remove(), 300);
+        }
+    }, 4500);
+}
+
+// Init
+renderTimeline('confirmed');
+setTimeout(() => showToast('confirmed'), 800);
+</script>
+
+<script src="../js/auth.js"></script>
+<script src="../js/database.js"></script>
+<script src="../js/chatbot-widget.js?v=20261113_v25"></script>
+<script>
+    if (window.auth && typeof auth.getCurrentUser === 'function') {
+        const u = auth.getCurrentUser();
+        if (!u) {
+            window.location.href = '../login.html';
+        }
+    }
+</script>
+</body>
+</html>

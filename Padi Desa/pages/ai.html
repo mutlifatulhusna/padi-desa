@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Asisten - Platform Padi Desa Cirebon Girang</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="../css/style.css" />
+    <style>
+        .page-container {
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            max-height: calc(100vh - 100px);
+        }
+
+        .ai-header {
+            background: linear-gradient(135deg, #2d6a4f 0%, #1b4332 100%);
+            color: #fff;
+            padding: 24px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .ai-header i {
+            font-size: 40px;
+            color: #6fcf97;
+        }
+
+        .ai-header h2 {
+            font-size: 22px;
+            margin-bottom: 4px;
+        }
+
+        .ai-header p {
+            color: #cfe3d0;
+            font-size: 14px;
+        }
+
+        .chat-container {
+            flex: 1;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            border: 1px solid #e8f0e6;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-box {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            background: #f8fbf7;
+        }
+
+        .message {
+            display: flex;
+            gap: 12px;
+            max-width: 80%;
+        }
+
+        .message.bot {
+            align-self: flex-start;
+        }
+
+        .message.user {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .bot .message-avatar {
+            background: #2d6a4f;
+            color: #fff;
+        }
+
+        .user .message-avatar {
+            background: #e8f0fe;
+            color: #1a56db;
+        }
+
+        .message-bubble {
+            padding: 12px 16px;
+            border-radius: 16px;
+            font-size: 14px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .bot .message-bubble {
+            background: #fff;
+            border: 1px solid #e8f0e6;
+            color: #1e3a2f;
+            border-top-left-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        }
+
+        .user .message-bubble {
+            background: #2d6a4f;
+            color: #fff;
+            border-top-right-radius: 4px;
+        }
+
+        .chat-input-area {
+            padding: 16px 24px;
+            background: #fff;
+            border-top: 1px solid #e8f0e6;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .chat-input-area input {
+            flex: 1;
+            padding: 14px 20px;
+            border: 2px solid #e8f0e6;
+            border-radius: 30px;
+            font-size: 14px;
+            transition: 0.3s;
+            background: #f8fbf7;
+        }
+
+        .chat-input-area input:focus {
+            outline: none;
+            border-color: #2d6a4f;
+            background: #fff;
+        }
+
+        .chat-input-area button {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: #2d6a4f;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: 0.3s;
+            flex-shrink: 0;
+        }
+
+        .chat-input-area button:hover {
+            background: #1b4332;
+            transform: scale(1.05);
+        }
+
+        .chat-input-area button:disabled {
+            background: #8aaa9a;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .suggestions {
+            display: flex;
+            gap: 8px;
+            padding: 12px 24px;
+            background: #fff;
+            border-top: 1px solid #e8f0e6;
+            overflow-x: auto;
+        }
+
+        .suggestions button {
+            padding: 8px 16px;
+            border: 1px solid #2d6a4f;
+            background: transparent;
+            color: #2d6a4f;
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: 0.3s;
+        }
+
+        .suggestions button:hover {
+            background: #2d6a4f;
+            color: #fff;
+        }
+
+        .typing-indicator {
+            display: none;
+            align-items: center;
+            gap: 4px;
+            padding: 12px 16px;
+            background: #fff;
+            border: 1px solid #e8f0e6;
+            border-radius: 16px;
+            border-top-left-radius: 4px;
+            align-self: flex-start;
+            margin-left: 48px;
+            margin-bottom: 16px;
+        }
+
+        .typing-indicator.active {
+            display: flex;
+        }
+
+        .dot {
+            width: 6px;
+            height: 6px;
+            background: #8aaa9a;
+            border-radius: 50%;
+            animation: typing 1.4s infinite ease-in-out both;
+        }
+
+        .dot:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .dot:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+
+        @keyframes typing {
+
+            0%,
+            80%,
+            100% {
+                transform: scale(0);
+            }
+
+            40% {
+                transform: scale(1);
+            }
+        }
+
+        .msg-error {
+            color: #c0392b;
+            font-size: 13px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page-container">
+        <div class="ai-header" id="aiHeader" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+            <div style="display:flex; align-items:center; gap:16px;">
+                <i class="fas fa-robot" id="aiHeaderIcon"></i>
+                <div>
+                    <h2 id="aiHeaderTitle">AI Asisten Pertanian Cirebon Girang</h2>
+                    <p id="aiHeaderSubtitle">Pilih mode chatbot: Chatbot Petani, Chatbot Admin, atau Chatbot Desa.</p>
+                </div>
+            </div>
+            <!-- Switcher 3 Mode Chatbot -->
+            <div style="display:flex; gap:8px; background:rgba(0,0,0,0.25); padding:6px; border-radius:12px;">
+                <button class="btn-mode active" data-mode="petani" onclick="switchFullMode('petani')" style="border:none; padding:8px 14px; border-radius:8px; font-weight:600; font-size:13px; cursor:pointer; background:#fff; color:#2e7d32;">
+                    🌾 Chatbot Petani
+                </button>
+                <button class="btn-mode" data-mode="admin" onclick="switchFullMode('admin')" style="border:none; padding:8px 14px; border-radius:8px; font-weight:600; font-size:13px; cursor:pointer; background:transparent; color:#fff;">
+                    👑 Chatbot Admin
+                </button>
+                <button class="btn-mode" data-mode="desa" onclick="switchFullMode('desa')" style="border:none; padding:8px 14px; border-radius:8px; font-weight:600; font-size:13px; cursor:pointer; background:transparent; color:#fff;">
+                    🏛️ Chatbot Desa
+                </button>
+            </div>
+        </div>
+
+        <!-- Info Mode Akses -->
+        <div id="modeBanner" style="background:#e8f5e9; border:1px solid #c8e6c9; color:#2e7d32; padding:10px 18px; border-radius:12px; margin-bottom:16px; font-size:13px; display:flex; align-items:center; gap:8px;">
+            <i class="fas fa-info-circle"></i> <span id="modeBannerText">Mode Petani: Membaca database terbatas untuk data pribadi & kelompok tani.</span>
+        </div>
+
+        <div class="chat-container">
+            <div class="chat-box" id="chatBox">
+                <div class="message bot">
+                    <div class="message-avatar" id="firstBotAvatar"><i class="fas fa-robot"></i></div>
+                    <div class="message-bubble" id="firstBotMessage">
+                        Halo! Saya adalah AI Asisten Pertanian Desa Cirebon Girang. Ada yang bisa saya bantu hari ini terkait pertanian padi Anda?
+                    </div>
+                </div>
+            </div>
+
+            <div class="typing-indicator" id="typingIndicator">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+
+            <div class="suggestions" id="fullSuggestions">
+                <!-- Sugesti dinamis diisi JS -->
+            </div>
+
+            <div class="chat-input-area">
+                <input type="text" id="chatInput" placeholder="Tulis pesan Anda di sini..." autocomplete="off" />
+                <button id="btnSend" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/auth.js"></script>
+    <script src="../js/database.js"></script>
+    <script src="../js/pak-tani-brain.js"></script>
+    <script>
+        // ==========================================
+        // KONFIGURASI BACKEND AI (GEMINI via PHP & OFFLINE BRAIN)
+        // ==========================================
+        const API_URL = '../api/chat.php';
+
+        // Cek login
+        const currentUser = auth.getCurrentUser();
+        if (!currentUser) window.location.href = '../login.html';
+
+        const chatBox = document.getElementById('chatBox');
+        const chatInput = document.getElementById('chatInput');
+        const typingIndicator = document.getElementById('typingIndicator');
+        const btnSend = document.getElementById('btnSend');
+
+        // State mode aktif (petani, admin, desa)
+        let activeFullMode = 'petani';
+        if (currentUser && currentUser.role === 'admin') activeFullMode = 'admin';
+        else if (currentUser && currentUser.role === 'perangkat') activeFullMode = 'desa';
+
+        const headerEl = document.getElementById('aiHeader');
+        const headerTitleEl = document.getElementById('aiHeaderTitle');
+        const headerSubtitleEl = document.getElementById('aiHeaderSubtitle');
+        const headerIconEl = document.getElementById('aiHeaderIcon');
+        const modeBannerEl = document.getElementById('modeBanner');
+        const modeBannerTextEl = document.getElementById('modeBannerText');
+        const suggestionsEl = document.getElementById('fullSuggestions');
+        const firstBotAvatarEl = document.getElementById('firstBotAvatar');
+        const firstBotMessageEl = document.getElementById('firstBotMessage');
+        const btnModeList = document.querySelectorAll('.btn-mode');
+
+        function switchFullMode(mode) {
+            activeFullMode = mode;
+            const brain = window.PakTaniBrain;
+            const profile = (brain && brain.botProfiles && brain.botProfiles[mode]) ? brain.botProfiles[mode] : null;
+
+            if (profile) {
+                headerTitleEl.textContent = profile.name;
+                headerSubtitleEl.textContent = profile.roleLabel + ' - ' + profile.description;
+                headerEl.style.background = profile.headerColor;
+                headerIconEl.className = 'fas ' + profile.avatarIcon;
+                firstBotAvatarEl.innerHTML = `<i class="fas ${profile.avatarIcon}"></i>`;
+                firstBotMessageEl.innerHTML = formatMarkdown(profile.welcome);
+
+                if (mode === 'admin') {
+                    modeBannerEl.style.background = '#fef3c7';
+                    modeBannerEl.style.borderColor = '#fde68a';
+                    modeBannerEl.style.color = '#92400e';
+                    modeBannerTextEl.textContent = "Mode Admin: Akses penuh tanpa batas ke seluruh database (User, Password, NIK, Transaksi).";
+                } else if (mode === 'desa') {
+                    modeBannerEl.style.background = '#eff6ff';
+                    modeBannerEl.style.borderColor = '#bfdbfe';
+                    modeBannerEl.style.color = '#1e40af';
+                    modeBannerTextEl.textContent = "Mode Desa: Akses data publik agregat desa (Kelompok Tani, Sebaran Lahan, Rekap Panen).";
+                } else {
+                    modeBannerEl.style.background = '#e8f5e9';
+                    modeBannerEl.style.borderColor = '#c8e6c9';
+                    modeBannerEl.style.color = '#2e7d32';
+                    modeBannerTextEl.textContent = "Mode Petani: Membaca database terbatas untuk data pribadi & kelompok tani.";
+                }
+
+                // Render Suggestions
+                suggestionsEl.innerHTML = '';
+                profile.suggestions.forEach(s => {
+                    const btn = document.createElement('button');
+                    btn.textContent = s.label;
+                    btn.onclick = () => useSuggestion(s.query);
+                    suggestionsEl.appendChild(btn);
+                });
+            }
+
+            // Update button styles
+            btnModeList.forEach(b => {
+                if (b.getAttribute('data-mode') === mode) {
+                    b.style.background = '#fff';
+                    b.style.color = mode === 'admin' ? '#b45309' : (mode === 'desa' ? '#1d4ed8' : '#2e7d32');
+                } else {
+                    b.style.background = 'transparent';
+                    b.style.color = '#fff';
+                }
+            });
+
+            appendMessage(`*Beralih ke **${mode.toUpperCase()} MODE**. Database real-time terhubung.*`, 'bot');
+        }
+
+        // Enter untuk kirim
+        chatInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        function useSuggestion(text) {
+            chatInput.value = text;
+            sendMessage();
+        }
+
+        function formatMarkdown(text) {
+            if (!text) return '';
+            return text
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/^### (.*$)/gim, '<div style="font-weight:700; margin:6px 0 2px 0;">$1</div>')
+                .replace(/^## (.*$)/gim, '<div style="font-weight:700; font-size:14px; margin:6px 0 2px 0;">$1</div>')
+                .replace(/^# (.*$)/gim, '<div style="font-weight:700; font-size:15px; margin:6px 0 2px 0;">$1</div>')
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/`([^`]+)`/g, '<code style="background:#e8f0e6; padding:2px 6px; border-radius:4px; font-weight:600;">$1</code>')
+                .replace(/^\s*[-•]\s+(.*$)/gim, '• $1')
+                .replace(/\n/g, '<br>');
+        }
+
+        function appendMessage(text, sender, isError = false) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message ${sender}`;
+
+            const brain = window.PakTaniBrain;
+            const profile = (brain && brain.botProfiles && brain.botProfiles[activeFullMode]) ? brain.botProfiles[activeFullMode] : null;
+            const icon = profile ? profile.avatarIcon : 'fa-robot';
+
+            const avatar = sender === 'bot'
+                ? `<i class="fas ${icon}"></i>`
+                : (currentUser.avatar || '👤');
+
+            msgDiv.innerHTML = `
+                <div class="message-avatar">${avatar}</div>
+                <div class="message-bubble${isError ? ' msg-error' : ''}"></div>
+            `;
+            const bubble = msgDiv.querySelector('.message-bubble');
+            if (sender === 'bot') {
+                bubble.innerHTML = formatMarkdown(text);
+            } else {
+                bubble.textContent = text;
+            }
+
+            chatBox.appendChild(msgDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const text = chatInput.value.trim();
+            if (!text) return;
+
+            // 1. Tampilkan pesan user
+            appendMessage(text, 'user');
+            chatInput.value = '';
+
+            // 2. Kunci tombol + tampilkan typing
+            btnSend.disabled = true;
+            chatBox.appendChild(typingIndicator);
+            typingIndicator.classList.add('active');
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            // Coba panggil Backend API (PHP + MySQL + Gemini) terlebih dahulu
+            const isHttp = window.location.protocol === 'http:' || window.location.protocol === 'https:';
+            if (isHttp) {
+                try {
+                    const res = await fetch(API_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            message: text,
+                            history: chatHistory,
+                            user: currentUser,
+                            botMode: activeFullMode
+                        })
+                    });
+
+                    if (res.ok) {
+                        const data = await res.json();
+                        typingIndicator.classList.remove('active');
+
+                        if (data.reply) {
+                            appendMessage(data.reply, 'bot');
+                            chatHistory.push({ role: 'user', content: text });
+                            chatHistory.push({ role: 'assistant', content: data.reply });
+                            btnSend.disabled = false;
+                            chatInput.focus();
+                            return;
+                        }
+                    }
+                } catch (fetchErr) {
+                    console.warn("Backend API tidak terjangkau, menggunakan engine lokal:", fetchErr);
+                }
+            }
+
+            // Fallback ke PakTaniBrain jika offline atau di luar web server
+            setTimeout(() => {
+                typingIndicator.classList.remove('active');
+                if (window.PakTaniBrain) {
+                    const brainAnswer = PakTaniBrain.answer(text, currentUser, activeFullMode);
+                    appendMessage(brainAnswer, 'bot');
+                } else {
+                    appendMessage("Halo! Saya siap membantu konsultasi pertanian Desa Cirebon Girang.", 'bot');
+                }
+                btnSend.disabled = false;
+                chatInput.focus();
+            }, 300);
+        }
+
+        // Inisialisasi awal mode
+        switchFullMode(activeFullMode);
+    </script>
+</body>
+
+</html>
